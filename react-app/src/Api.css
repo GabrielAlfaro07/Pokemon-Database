@@ -1,0 +1,140 @@
+/* Api.css */
+
+/* Fondo de la página */
+body {
+    background-color: #dc051b; /* Rojo claro */
+    color: #fff; /* Texto blanco para contraste */
+    margin: 0;
+    font-family: Arial, sans-serif; /* Fuente para el texto */
+  }
+  
+header {
+    background-color: #111; /* Gris oscuro */
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  /* Estilo para el título de la página */
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+  
+  /* Estilo para el subtítulo de la página */
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  /* Estilo para el contenido de la página */
+  main {
+    padding: 1rem;
+  }
+  
+  /* Estilo para el contenedor de la lista de usuarios */
+  .users {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  /* Estilo para cada usuario de la lista */
+  .user {
+    background-color: #333; /* Gris */
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  /* Estilo para el nombre del usuario */
+  .user h3 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  
+  /* Estilo para el email del usuario */
+  .user p {
+    margin: 0;
+    font-size: 1rem;
+  }
+  
+  /* Estilo para el botón de cargar más usuarios */
+  .load-more {
+    background-color: #0074D9; /* Azul */
+    color: #fff; /* Texto blanco para contraste */
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
+  
+  /* Estilo para el botón de cargar más usuarios al pasar el ratón por encima */
+  .load-more:hover {
+    background-color: #0056b3; /* Azul más oscuro */
+  }
+  
+  /* Estilo para el botón de cargar más usuarios al hacer clic */
+  .load-more:active {
+    background-color: #003366; /* Azul oscuro */
+  }
+  
+  /* Estilo para el botón de cargar más usuarios cuando está deshabilitado */
+  .load-more[disabled] {
+    background-color: #ccc; /* Gris claro */
+    color: #666;
+  }
+
+  .Api {
+    /* Cuadro con informacion de la API */
+    background-color: #ffffff; /* Gris */
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  .Api-Content {
+    /* Cuadro con informacion de la API */
+    background-color: #000000; /* Gris */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    /* div pequeño */
+    margin: 0.5rem;
+
+  }
+  .pokemon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .pokemon-item {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .pokemon-card {
+    background-color: #34495e;
+    border: 1px solid #2c3e50; /* Contorno oscuro */
+    border-radius: 5px;
+    padding: 15px;
+    text-align: center;
+    width: 100%;
+    max-width: 150px;
+  }
+  
+  .pokemon-card img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  .pokemon-card h2 {
+    font-size: 1em;
+    margin-top: 10px;
+  }
+  
+  .pokemon-card h3 {
+    font-size: 0.8em;
+    color: #ecf0f1;
+  }
+  
+ 
