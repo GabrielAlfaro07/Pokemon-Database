@@ -1,0 +1,38 @@
+body {
+  background-color: #c64350; /* Rojo claro */
+  color: #fff; /* Texto blanco para contraste */
+  margin: 0;
+  font-family: Arial, sans-serif; /* Fuente para el texto */
+}
+
+header {
+  background-color: #34495e; /* Gris oscuro */
+  color: #fff;
+  font-size: 1.5rem;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 2rem;
+}
+
+.App {
+  /* Cuadro con informacion de la API */
+  background-color: #ffffff; /* blanco */
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 2rem;
+}
+
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(200px, 1fr)
+  ); /* Create responsive columns */
+  gap: 20px;
+  padding: 20px;
+}
+
+.pokemon-item {
+  display: flex;
+  justify-content: center;
+}
