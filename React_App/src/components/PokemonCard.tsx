@@ -112,10 +112,15 @@ const PokemonCard = (props: Props) => {
         #{infPokemon?.id.toString().padStart(4, "0")}
       </h2>
       <h2 className={styles["pokemon-types"]}>
-        {infPokemon?.types
-          .map((typeInfo) => capitalizeWords(typeInfo.type.name)) // Extract the name of each type
-          .join("/")}{" "}
-        {/* Join the types with a '/' separator */}
+        {infPokemon?.types.map((typeInfo) => (
+          <span
+            key={typeInfo.type.name}
+            className={styles["pokemon-type"]}
+            style={{ backgroundColor: getTypeColor(typeInfo.type.name) }}
+          >
+            {capitalizeWords(typeInfo.type.name)}
+          </span>
+        ))}
       </h2>
     </div>
   );

@@ -59,10 +59,24 @@
 }
 
 .pokemon-types {
-  font-size: 0.9em;
-  color: #ecf0f1;
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  gap: 5px; /* Add some spacing between the type badges */
   position: absolute;
-  bottom: 0px; /* Position at the bottom */
+  bottom: -10px; /* Position at the bottom */
   left: 10px; /* Position on the left */
   z-index: 1; /* Keep the text on top of the background */
+}
+
+.pokemon-type {
+  padding: 3px 8px;
+  border-radius: 15px; /* Circular corners */
+  border: 2px solid white; /* White border */
+  color: white;
+  font-size: 0.6em;
+  text-align: center;
+  background-color: var(
+    --type-color
+  ); /* Background color from the inline style */
+  white-space: nowrap; /* Prevent text from wrapping */
 }
