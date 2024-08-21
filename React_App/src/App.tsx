@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import PokemonCard from "./components/PokemonCard";
+import SearchBar from "./components/SearchBar";
 
 interface Pokemon {
   name: string;
@@ -9,6 +10,7 @@ interface Pokemon {
 
 const App = () => {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,11 +30,25 @@ const App = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  const filteredPokemonList = pokemonList.filter((pokemon) =>
+    pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="App">
-      <header>Pokedex</header>
+      <header>
+        <div>
+          <h1>Pokedex</h1>
+        </div>
+        <div>
+          <SearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
+        </div>
+      </header>
       <div className="pokemon-grid">
-        {pokemonList.map((pokemon, index) => (
+        {filteredPokemonList.map((pokemon, index) => (
           <div key={index} className="pokemon-item">
             <PokemonCard pokemon={pokemon} />
           </div>

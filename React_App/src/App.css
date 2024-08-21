@@ -1,25 +1,41 @@
 body {
-  background-color: #c64350; /* Rojo claro */
-  color: #fff; /* Texto blanco para contraste */
+  background-color: #c64350; /* Light red */
+  color: #fff; /* White text for contrast */
   margin: 0;
-  font-family: Arial, sans-serif; /* Fuente para el texto */
+  font-family: Arial, sans-serif; /* Font for text */
+  height: 100vh; /* Full height of the viewport */
+  overflow: hidden; /* Prevent body from scrolling */
+  display: flex;
+  flex-direction: column;
 }
 
 header {
-  background-color: #34495e; /* Gris oscuro */
+  background-color: #34495e;
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1rem;
   padding: 1rem;
   text-align: center;
   border-radius: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0; /* Remove default margin */
+}
+
+.search-bar {
+  display: flex;
 }
 
 .App {
-  /* Cuadro con informacion de la API */
-  background-color: #ffffff; /* blanco */
+  background-color: #ffffff; /* White */
   padding: 1rem;
   margin: 1rem;
   border-radius: 2rem;
+  flex-grow: 1; /* Allow the main content area to grow and fill the available space */
+  overflow-y: auto; /* Allow vertical scrolling inside the App component */
 }
 
 .pokemon-grid {
