@@ -11,11 +11,11 @@ interface Pokemon {
 const PAGE_SIZE = 100;
 
 const App = () => {
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]); // Explicitly typed as an array of Pokemon
-  const [allPokemon, setAllPokemon] = useState([]);
+  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]); // Explicitly typed as an array of Pokemon
+  const [displayedPokemon, setDisplayedPokemon] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // Allow error to be either a string or null
+  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -24,8 +24,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    fetchPokemonPage(currentPage);
-  }, [currentPage, allPokemon]);
+    updateDisplayedPokemon();
+  }, [currentPage, searchQuery, allPokemon]);
 
   const fetchInitialData = async () => {
     setLoading(true);
@@ -44,19 +44,20 @@ const App = () => {
     }
   };
 
-  const fetchPokemonPage = (page: number) => {
-    if (!allPokemon.length) return;
-    const offset = page * PAGE_SIZE;
-    const paginatedPokemon = allPokemon.slice(offset, offset + PAGE_SIZE);
-    setPokemonList(paginatedPokemon);
+  const updateDisplayedPokemon = () => {
+    const filteredPokemon = allPokemon.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    setTotalPages(Math.ceil(filteredPokemon.length / PAGE_SIZE));
+
+    const offset = currentPage * PAGE_SIZE;
+    const paginatedPokemon = filteredPokemon.slice(offset, offset + PAGE_SIZE);
+    setDisplayedPokemon(paginatedPokemon);
   };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-
-  const filteredPokemonList = pokemonList.filter((pokemon) =>
-    pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="App bg-red-400 text-white flex flex-col min-h-screen p-4">
@@ -70,11 +71,11 @@ const App = () => {
           totalPages={totalPages}
           onPageChange={(newPage) => setCurrentPage(newPage)}
         />
-        {filteredPokemonList.length === 0 ? (
+        {displayedPokemon.length === 0 ? (
           <div>No Pokémon found</div>
         ) : (
           <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5">
-            {filteredPokemonList.map((pokemon, index) => (
+            {displayedPokemon.map((pokemon, index) => (
               <div key={index} className="pokemon-item flex justify-center">
                 <PokemonCard pokemon={pokemon} />
               </div>
