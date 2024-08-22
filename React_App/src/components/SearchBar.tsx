@@ -18,7 +18,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
         placeholder="Search"
         className="flex-grow border-none outline-none py-1 px-3 rounded-full text-gray-800 text-base placeholder:text-gray-400"
       />
-      <img src="src/assets/search-icon.png" alt="Search" className="w-5 h-5" />
+      <img
+        src="src/assets/search-icon.png"
+        alt="Search"
+        className="w-5 h-5 mr-2"
+      />
     </div>
   );
 };
