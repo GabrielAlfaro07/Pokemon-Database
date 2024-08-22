@@ -11,13 +11,15 @@ interface Pokemon {
 const PAGE_SIZE = 100;
 
 const App = () => {
-  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]); // Explicitly typed as an array of Pokemon
+  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [displayedPokemon, setDisplayedPokemon] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [previousPage, setPreviousPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     fetchInitialData();
@@ -56,6 +58,20 @@ const App = () => {
     setDisplayedPokemon(paginatedPokemon);
   };
 
+  const handleSearch = (query: string) => {
+    if (query !== "") {
+      if (!isSearching) {
+        setPreviousPage(currentPage);
+        setCurrentPage(0); // Start search from page 1
+      }
+      setIsSearching(true);
+    } else {
+      setIsSearching(false);
+      setCurrentPage(previousPage); // Return to previous page after clearing search
+    }
+    setSearchQuery(query);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -63,7 +79,7 @@ const App = () => {
     <div className="App bg-red-400 text-white flex flex-col min-h-screen p-4">
       <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
         <h1 className="text-2xl m-0">Pokedex</h1>
-        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <SearchBar searchQuery={searchQuery} setSearchQuery={handleSearch} />
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
         <PaginationButtons
