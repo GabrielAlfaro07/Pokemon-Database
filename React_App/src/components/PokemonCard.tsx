@@ -90,7 +90,7 @@ const PokemonCard = (props: Props) => {
 
   return (
     <div
-      className="relative bg-gray-800 rounded-lg p-4 text-left w-[200px] h-[110px] overflow-hidden transition-transform transform hover:translate-y-[-10px]"
+      className="relative bg-gray-800 rounded-xl p-4 text-left w-[200px] h-[110px] overflow-hidden transition-transform transform hover:translate-y-[-10px]"
       style={{ backgroundColor }}
     >
       {infPokemon?.sprites.front_default ? (
