@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./SearchBar.module.css";
 
 type SearchBarProps = {
   searchQuery: string;
@@ -11,19 +10,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
   setSearchQuery,
 }) => {
   return (
-    <div className={styles["search-bar"]}>
+    <div className="flex items-center bg-white rounded-full p-1 shadow w-[50%] max-w-[400px]">
       <input
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         placeholder="Search"
-        className={styles["search-input"]}
+        className="flex-grow border-none outline-none py-1 px-3 rounded-full text-gray-800 text-base placeholder:text-gray-400"
       />
-      <img
-        src="src/assets/search-icon.png" // Update with the correct path to your image
-        alt="Search"
-        className={styles["search-icon"]}
-      />
+      <img src="src/assets/search-icon.png" alt="Search" className="w-5 h-5" />
     </div>
   );
 };

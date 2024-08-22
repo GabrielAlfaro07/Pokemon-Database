@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import styles from "./PokemonCard.module.css"; // Import styles as a module
 
 interface Pokemon {
   name: string;
@@ -45,18 +44,17 @@ const typeColorMap: { [key: string]: string } = {
   steel: "#B8B8D0",
   fairy: "#EE99AC",
   normal: "#A8A878",
-  // Add more types if needed
 };
 
 function getTypeColor(type: string): string {
-  return typeColorMap[type.toLowerCase()] || "#34495e"; // Default to the card's original color if type is not found
+  return typeColorMap[type.toLowerCase()] || "#34495e";
 }
 
 function capitalizeWords(name: string): string {
   return name
-    .split(/[\s-]/) // Split by spaces or dashes
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
-    .join(name.includes("-") ? "-" : " "); // Join with a dash if the original string had a dash, otherwise with a space
+    .split(/[\s-]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(name.includes("-") ? "-" : " ");
 }
 
 const PokemonCard = (props: Props) => {
@@ -65,13 +63,12 @@ const PokemonCard = (props: Props) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("Fetching data from:", props.pokemon.url); // Log the URL
+    console.log("Fetching data from:", props.pokemon.url);
     fetch(props.pokemon.url)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        // Ensure the response is JSON
         if (
           !response.headers.get("content-type")?.includes("application/json")
         ) {
@@ -89,39 +86,43 @@ const PokemonCard = (props: Props) => {
 
   const backgroundColor = infPokemon?.types?.[0]
     ? getTypeColor(infPokemon.types[0].type.name)
-    : "#34495e"; // Default color
+    : "#34495e";
 
   return (
     <div
-      className={styles["pokemon-card"]}
-      style={{ backgroundColor }} // Apply the background color here
+      className="relative bg-gray-800 rounded-lg p-4 text-left w-[200px] h-[110px] overflow-hidden transition-transform transform hover:translate-y-[-10px]"
+      style={{ backgroundColor }}
     >
       {infPokemon?.sprites.front_default ? (
         <img
           src={infPokemon.sprites.front_default}
           alt={infPokemon.name}
-          className={styles["pokemon-image"]}
+          className="absolute bottom-0 right-0 max-w-[100px] z-[1]"
         />
       ) : (
         <img src="/no-image.png" alt="No image available" />
       )}
-      <h1 className={styles["pokemon-name"]}>
+      <h1 className="absolute top-0 left-2 text-[1.3em] text-gray-100 font-bold z-[1]">
         {infPokemon?.name ? capitalizeWords(infPokemon.name) : ""}
       </h1>
-      <h2 className={styles["pokemon-id"]}>
+      <h2 className="absolute top-0 right-2 text-sm text-white z-[1]">
         #{infPokemon?.id.toString().padStart(4, "0")}
       </h2>
-      <h2 className={styles["pokemon-types"]}>
+      <h2 className="absolute bottom-2 left-2 flex flex-col gap-1 z-[1]">
         {infPokemon?.types.map((typeInfo) => (
           <span
             key={typeInfo.type.name}
-            className={styles["pokemon-type"]}
+            className="px-2 py-1 text-[0.8em] text-white rounded-full border-2 border-white text-center whitespace-nowrap"
             style={{ backgroundColor: getTypeColor(typeInfo.type.name) }}
           >
             {capitalizeWords(typeInfo.type.name)}
           </span>
         ))}
       </h2>
+      <div
+        className="absolute bottom-[10%] left-[55%] w-[110px] h-[110px] bg-cover bg-no-repeat opacity-60 transform rotate-45 z-0"
+        style={{ backgroundImage: "url('/src/assets/pokeball-logo.png')" }}
+      />
     </div>
   );
 };
