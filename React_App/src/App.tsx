@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import PokemonCard from "./components/PokemonCard";
 import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
 
+interface Pokemon {
+  name: string;
+  url: string;
+}
+
 const PAGE_SIZE = 100;
 
 const App = () => {
-  const [pokemonList, setPokemonList] = useState([]);
+  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]); // Explicitly typed as an array of Pokemon
   const [allPokemon, setAllPokemon] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null); // Allow error to be either a string or null
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -39,7 +44,7 @@ const App = () => {
     }
   };
 
-  const fetchPokemonPage = (page) => {
+  const fetchPokemonPage = (page: number) => {
     if (!allPokemon.length) return;
     const offset = page * PAGE_SIZE;
     const paginatedPokemon = allPokemon.slice(offset, offset + PAGE_SIZE);
