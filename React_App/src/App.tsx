@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import PokemonCard from "./components/PokemonCard";
 import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
+import TypeDropdown from "./components/TypeDropdown"; // Import the new TypeDropdown component
 
 interface Pokemon {
   name: string;
@@ -38,6 +39,7 @@ const App = () => {
   const [previousPage, setPreviousPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
+  const [selectedType, setSelectedType] = useState<string | null>(null); // New state for selected type
 
   useEffect(() => {
     fetchInitialData();
@@ -45,7 +47,7 @@ const App = () => {
 
   useEffect(() => {
     updateDisplayedPokemon();
-  }, [currentPage, searchQuery, allPokemon]);
+  }, [currentPage, searchQuery, allPokemon, selectedType]); // Update when selectedType changes
 
   useEffect(() => {
     fetchPokemonDetails();
@@ -86,9 +88,18 @@ const App = () => {
   };
 
   const updateDisplayedPokemon = () => {
-    const filteredPokemon = allPokemon.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredPokemon = allPokemon.filter((pokemon) => {
+      const matchesSearch = pokemon.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesType = selectedType
+        ? pokemonDetails[pokemon.name]?.types.some(
+            (typeInfo) => typeInfo.type.name === selectedType
+          )
+        : true;
+
+      return matchesSearch && matchesType;
+    });
 
     setTotalPages(Math.ceil(filteredPokemon.length / PAGE_SIZE));
 
@@ -111,6 +122,11 @@ const App = () => {
     setSearchQuery(query);
   };
 
+  const handleTypeChange = (type: string | null) => {
+    setSelectedType(type);
+    setCurrentPage(0); // Reset to page 1 when a new type is selected
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -118,7 +134,13 @@ const App = () => {
     <div className="App bg-red-400 text-white flex flex-col min-h-screen p-4">
       <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
         <h1 className="text-2xl m-0">Pokedex</h1>
-        <SearchBar searchQuery={searchQuery} setSearchQuery={handleSearch} />
+        <div className="flex items-center space-x-4">
+          <TypeDropdown
+            selectedType={selectedType}
+            onChange={handleTypeChange}
+          />
+          <SearchBar searchQuery={searchQuery} setSearchQuery={handleSearch} />
+        </div>
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
         <PaginationButtons

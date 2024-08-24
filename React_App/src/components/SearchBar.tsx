@@ -10,13 +10,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
   setSearchQuery,
 }) => {
   return (
-    <div className="flex items-center bg-white rounded-full p-1 shadow w-[50%] max-w-[300px]">
+    <div className="flex items-center bg-white rounded-full p-1 shadow w-[100%] max-w-[400px]">
       <input
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         placeholder="Search"
-        className="flex-grow border-none outline-none py-1 px-3 rounded-full text-gray-800 text-base placeholder:text-gray-400"
+        className="flex-grow border-none outline-none py-1 px-3 rounded-full text-gray-800 text-base placeholder:text-gray-400 bg-white"
       />
       <img
         src="src/assets/search-icon.png"
