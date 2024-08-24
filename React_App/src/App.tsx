@@ -8,11 +8,29 @@ interface Pokemon {
   url: string;
 }
 
+interface PokemonType {
+  type: {
+    name: string;
+    url: string;
+  };
+}
+
+interface PokemonDetails {
+  id: number;
+  sprites: {
+    front_default: string;
+  };
+  types: PokemonType[];
+}
+
 const PAGE_SIZE = 100;
 
 const App = () => {
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [displayedPokemon, setDisplayedPokemon] = useState<Pokemon[]>([]);
+  const [pokemonDetails, setPokemonDetails] = useState<{
+    [name: string]: PokemonDetails;
+  }>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +47,10 @@ const App = () => {
     updateDisplayedPokemon();
   }, [currentPage, searchQuery, allPokemon]);
 
+  useEffect(() => {
+    fetchPokemonDetails();
+  }, [allPokemon]);
+
   const fetchInitialData = async () => {
     setLoading(true);
     setError(null);
@@ -43,6 +65,23 @@ const App = () => {
       setError("Failed to fetch Pokémon data.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPokemonDetails = async () => {
+    for (const pokemon of allPokemon) {
+      if (!pokemonDetails[pokemon.name]) {
+        try {
+          const response = await fetch(pokemon.url);
+          const data: PokemonDetails = await response.json();
+          setPokemonDetails((prevDetails) => ({
+            ...prevDetails,
+            [pokemon.name]: data,
+          }));
+        } catch (error) {
+          console.error(`Failed to fetch details for ${pokemon.name}`);
+        }
+      }
     }
   };
 
@@ -93,7 +132,10 @@ const App = () => {
           <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5">
             {displayedPokemon.map((pokemon, index) => (
               <div key={index} className="pokemon-item flex justify-center">
-                <PokemonCard pokemon={pokemon} />
+                <PokemonCard
+                  pokemon={pokemon}
+                  details={pokemonDetails[pokemon.name]}
+                />
               </div>
             ))}
           </div>

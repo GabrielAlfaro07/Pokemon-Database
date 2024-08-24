@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 interface Pokemon {
   name: string;
   url: string;
@@ -14,7 +12,6 @@ interface PokemonType {
 
 interface PokemonDetails {
   id: number;
-  name: string;
   sprites: {
     front_default: string;
   };
@@ -23,6 +20,7 @@ interface PokemonDetails {
 
 type Props = {
   pokemon: Pokemon;
+  details: PokemonDetails | undefined;
 };
 
 const typeColorMap: { [key: string]: string } = {
@@ -57,35 +55,11 @@ function capitalizeWords(name: string): string {
     .join(name.includes("-") ? "-" : " ");
 }
 
-const PokemonCard = (props: Props) => {
-  const [infPokemon, setInfPokemon] = useState<PokemonDetails | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+const PokemonCard = ({ pokemon, details }: Props) => {
+  if (!details) return <div>Loading details...</div>;
 
-  useEffect(() => {
-    console.log("Fetching data from:", props.pokemon.url);
-    fetch(props.pokemon.url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        if (
-          !response.headers.get("content-type")?.includes("application/json")
-        ) {
-          throw new Error("Response is not JSON");
-        }
-        return response.json();
-      })
-      .then((data) => setInfPokemon(data))
-      .catch((error) => setError(error.message))
-      .finally(() => setLoading(false));
-  }, [props.pokemon.url]);
-
-  if (loading) return <div>Loading details...</div>;
-  if (error) return <div>Error: {error}</div>;
-
-  const backgroundColor = infPokemon?.types?.[0]
-    ? getTypeColor(infPokemon.types[0].type.name)
+  const backgroundColor = details?.types?.[0]
+    ? getTypeColor(details.types[0].type.name)
     : "#34495e";
 
   return (
@@ -93,23 +67,23 @@ const PokemonCard = (props: Props) => {
       className="relative bg-gray-800 rounded-xl p-4 text-left w-[200px] h-[110px] overflow-hidden transition-transform transform hover:translate-y-[-10px]"
       style={{ backgroundColor }}
     >
-      {infPokemon?.sprites.front_default ? (
+      {details?.sprites.front_default ? (
         <img
-          src={infPokemon.sprites.front_default}
-          alt={infPokemon.name}
+          src={details.sprites.front_default}
+          alt={pokemon.name}
           className="absolute bottom-0 right-0 max-w-[100px] z-[1]"
         />
       ) : (
         <img src="/no-image.png" alt="No image available" />
       )}
       <h1 className="absolute top-0 left-2 text-[1.3em] text-gray-100 font-bold z-[1]">
-        {infPokemon?.name ? capitalizeWords(infPokemon.name) : ""}
+        {capitalizeWords(pokemon.name)}
       </h1>
       <h2 className="absolute top-0 right-2 text-sm text-white z-[1]">
-        #{infPokemon?.id.toString().padStart(4, "0")}
+        #{details?.id.toString().padStart(4, "0")}
       </h2>
       <h2 className="absolute bottom-2 left-2 flex flex-col gap-1 z-[1]">
-        {infPokemon?.types.map((typeInfo) => (
+        {details?.types.map((typeInfo) => (
           <span
             key={typeInfo.type.name}
             className="px-2 py-1 text-[0.8em] text-white rounded-full border-2 border-white text-center whitespace-nowrap"
