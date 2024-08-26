@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import PokemonCard from "./components/PokemonCard";
 import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
-import TypeDropdown from "./components/TypeDropdown"; // Import the new TypeDropdown component
+import TypeDropdown from "./components/TypeDropdown";
 
 interface Pokemon {
   name: string;
@@ -26,7 +26,7 @@ interface PokemonDetails {
 
 const PAGE_SIZE = 100;
 
-const App = () => {
+const Pokedex = () => {
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [displayedPokemon, setDisplayedPokemon] = useState<Pokemon[]>([]);
   const [pokemonDetails, setPokemonDetails] = useState<{
@@ -39,7 +39,7 @@ const App = () => {
   const [previousPage, setPreviousPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedType, setSelectedType] = useState<string | null>(null); // New state for selected type
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   useEffect(() => {
     fetchInitialData();
@@ -47,7 +47,7 @@ const App = () => {
 
   useEffect(() => {
     updateDisplayedPokemon();
-  }, [currentPage, searchQuery, allPokemon, selectedType]); // Update when selectedType changes
+  }, [currentPage, searchQuery, allPokemon, selectedType]);
 
   useEffect(() => {
     fetchPokemonDetails();
@@ -60,11 +60,12 @@ const App = () => {
       const response = await fetch(
         "https://pokeapi.co/api/v2/pokemon?offset=0&limit=100000"
       );
+      if (!response.ok) throw new Error("Failed to fetch Pokémon data.");
       const data = await response.json();
       setAllPokemon(data.results);
       setTotalPages(Math.ceil(data.count / PAGE_SIZE));
     } catch (error) {
-      setError("Failed to fetch Pokémon data.");
+      setError(error.message || "An unknown error occurred.");
     } finally {
       setLoading(false);
     }
@@ -75,13 +76,15 @@ const App = () => {
       if (!pokemonDetails[pokemon.name]) {
         try {
           const response = await fetch(pokemon.url);
+          if (!response.ok)
+            throw new Error(`Failed to fetch details for ${pokemon.name}`);
           const data: PokemonDetails = await response.json();
           setPokemonDetails((prevDetails) => ({
             ...prevDetails,
             [pokemon.name]: data,
           }));
         } catch (error) {
-          console.error(`Failed to fetch details for ${pokemon.name}`);
+          console.error(error.message);
         }
       }
     }
@@ -112,28 +115,28 @@ const App = () => {
     if (query !== "") {
       if (!isSearching) {
         setPreviousPage(currentPage);
-        setCurrentPage(0); // Start search from page 1
+        setCurrentPage(0);
       }
       setIsSearching(true);
     } else {
       setIsSearching(false);
-      setCurrentPage(previousPage); // Return to previous page after clearing search
+      setCurrentPage(previousPage);
     }
     setSearchQuery(query);
   };
 
   const handleTypeChange = (type: string | null) => {
     setSelectedType(type);
-    setCurrentPage(0); // Reset to page 1 when a new type is selected
+    setCurrentPage(0);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="loader">Loading...</div>;
+  if (error) return <div className="error-message">Error: {error}</div>;
 
   return (
-    <div className="App bg-red-400 text-white flex flex-col min-h-screen p-4">
+    <div className="Pokedex bg-red-400 text-white flex flex-col min-h-screen p-4">
       <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
-        <h1 className="text-2xl m-0">Pokedex</h1>
+        <h1 className="text-2xl m-0">PokéDex</h1>
         <div className="flex items-center space-x-4">
           <TypeDropdown
             selectedType={selectedType}
@@ -167,4 +170,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Pokedex;
