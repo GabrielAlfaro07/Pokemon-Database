@@ -71,7 +71,7 @@ const PokemonCard = ({ pokemon, details }: Props) => {
         <img
           src={details.sprites.front_default}
           alt={pokemon.name}
-          className="absolute bottom-0 right-0 max-w-[100px] z-[1]"
+          className="absolute bottom-0 right-0 w-[100px] h-[100px] z-[1]"
         />
       ) : (
         <img src="/no-image.png" alt="No image available" />

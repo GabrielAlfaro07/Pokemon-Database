@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import ItemCard from "./components/ItemCard";
 import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
-import AttributeDropdown from "./components/AttributeDropdown";
+import CategoryDropdown from "./components/CategoryDropdown"; // Assuming you have a CategoryDropdown component
 
 interface Item {
   name: string;
   url: string;
 }
 
-interface ItemAttribute {
-  attribute: {
+interface ItemCategory {
+  category: {
     name: string;
     url: string;
   };
@@ -21,7 +21,7 @@ interface ItemDetails {
   sprites: {
     default: string;
   };
-  attributes: ItemAttribute[];
+  category: ItemCategory; // Updated to include category
 }
 
 const PAGE_SIZE = 100;
@@ -30,7 +30,7 @@ const ItemDex = () => {
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [displayedItems, setDisplayedItems] = useState<Item[]>([]);
   const [itemDetails, setItemDetails] = useState<{
-    [name: string]: ItemDetails | undefined;
+    [name: string]: ItemDetails;
   }>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -39,9 +39,7 @@ const ItemDex = () => {
   const [previousPage, setPreviousPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedAttribute, setSelectedAttribute] = useState<string | null>(
-    null
-  );
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     fetchInitialData();
@@ -49,11 +47,11 @@ const ItemDex = () => {
 
   useEffect(() => {
     updateDisplayedItems();
-  }, [currentPage, searchQuery, allItems, selectedAttribute, itemDetails]);
+  }, [currentPage, searchQuery, allItems, selectedCategory]);
 
   useEffect(() => {
     fetchItemDetails();
-  }, [displayedItems]);
+  }, [allItems]);
 
   const fetchInitialData = async () => {
     setLoading(true);
@@ -62,31 +60,32 @@ const ItemDex = () => {
       const response = await fetch(
         "https://pokeapi.co/api/v2/item?offset=0&limit=100000"
       );
+      if (!response.ok) throw new Error("Failed to fetch item data.");
       const data = await response.json();
       setAllItems(data.results);
       setTotalPages(Math.ceil(data.count / PAGE_SIZE));
     } catch (error) {
-      setError("Failed to fetch items data.");
+      setError(error.message || "An unknown error occurred.");
     } finally {
       setLoading(false);
     }
   };
 
   const fetchItemDetails = async () => {
-    const itemsToFetch = displayedItems.filter(
-      (item) => !itemDetails[item.name]
-    );
-
-    for (const item of itemsToFetch) {
-      try {
-        const response = await fetch(item.url);
-        const data: ItemDetails = await response.json();
-        setItemDetails((prevDetails) => ({
-          ...prevDetails,
-          [item.name]: data,
-        }));
-      } catch (error) {
-        console.error(`Failed to fetch details for ${item.name}`);
+    for (const item of allItems) {
+      if (!itemDetails[item.name]) {
+        try {
+          const response = await fetch(item.url);
+          if (!response.ok)
+            throw new Error(`Failed to fetch details for ${item.name}`);
+          const data: ItemDetails = await response.json();
+          setItemDetails((prevDetails) => ({
+            ...prevDetails,
+            [item.name]: data,
+          }));
+        } catch (error) {
+          console.error(error.message);
+        }
       }
     }
   };
@@ -96,13 +95,11 @@ const ItemDex = () => {
       const matchesSearch = item.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      const matchesAttribute = selectedAttribute
-        ? itemDetails[item.name]?.attributes.some(
-            (attrInfo) => attrInfo.attribute.name === selectedAttribute
-          )
+      const matchesCategory = selectedCategory
+        ? itemDetails[item.name]?.category.category.name === selectedCategory
         : true;
 
-      return matchesSearch && matchesAttribute;
+      return matchesSearch && matchesCategory;
     });
 
     setTotalPages(Math.ceil(filteredItems.length / PAGE_SIZE));
@@ -116,32 +113,32 @@ const ItemDex = () => {
     if (query !== "") {
       if (!isSearching) {
         setPreviousPage(currentPage);
-        setCurrentPage(0); // Start search from page 1
+        setCurrentPage(0);
       }
       setIsSearching(true);
     } else {
       setIsSearching(false);
-      setCurrentPage(previousPage); // Return to previous page after clearing search
+      setCurrentPage(previousPage);
     }
     setSearchQuery(query);
   };
 
-  const handleAttributeChange = (attribute: string | null) => {
-    setSelectedAttribute(attribute);
-    setCurrentPage(0); // Reset to page 1 when a new attribute is selected
+  const handleCategoryChange = (category: string | null) => {
+    setSelectedCategory(category);
+    setCurrentPage(0);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="loader">Loading...</div>;
+  if (error) return <div className="error-message">Error: {error}</div>;
 
   return (
     <div className="ItemDex bg-red-400 text-white flex flex-col min-h-screen p-4">
       <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
         <h1 className="text-2xl m-0">ItemDex</h1>
         <div className="flex items-center space-x-4">
-          <AttributeDropdown
-            selectedAttribute={selectedAttribute}
-            onChange={handleAttributeChange}
+          <CategoryDropdown
+            selectedCategory={selectedCategory}
+            onChange={handleCategoryChange}
           />
           <SearchBar searchQuery={searchQuery} setSearchQuery={handleSearch} />
         </div>
@@ -156,13 +153,9 @@ const ItemDex = () => {
           <div>No items found</div>
         ) : (
           <div className="item-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5">
-            {displayedItems.map((item) => (
-              <div key={item.name} className="item-item flex justify-center">
-                {itemDetails[item.name] ? (
-                  <ItemCard item={item} details={itemDetails[item.name]} />
-                ) : (
-                  <div>Loading details...</div>
-                )}
+            {displayedItems.map((item, index) => (
+              <div key={index} className="item-item flex justify-center">
+                <ItemCard item={item} details={itemDetails[item.name]} />
               </div>
             ))}
           </div>
