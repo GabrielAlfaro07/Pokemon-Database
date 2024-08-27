@@ -84,7 +84,18 @@ const ItemDex = () => {
             [item.name]: data,
           }));
         } catch (error) {
-          console.error(error.message);
+          console.error(
+            `Error fetching details for ${item.name}: ${error.message}`
+          );
+          // Store a fallback empty object if fetching fails
+          setItemDetails((prevDetails) => ({
+            ...prevDetails,
+            [item.name]: {
+              id: -1,
+              sprites: { default: "" },
+              category: { category: { name: "Unknown", url: "#" } },
+            },
+          }));
         }
       }
     }
@@ -92,11 +103,12 @@ const ItemDex = () => {
 
   const updateDisplayedItems = () => {
     const filteredItems = allItems.filter((item) => {
+      const itemDetail = itemDetails[item.name];
       const matchesSearch = item.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory
-        ? itemDetails[item.name]?.category.category.name === selectedCategory
+        ? itemDetail?.category?.name === selectedCategory
         : true;
 
       return matchesSearch && matchesCategory;
@@ -153,11 +165,20 @@ const ItemDex = () => {
           <div>No items found</div>
         ) : (
           <div className="item-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5">
-            {displayedItems.map((item, index) => (
-              <div key={index} className="item-item flex justify-center">
-                <ItemCard item={item} details={itemDetails[item.name]} />
-              </div>
-            ))}
+            {displayedItems.map((item, index) => {
+              const details = itemDetails[item.name];
+              return (
+                <div key={index} className="item-item flex justify-center">
+                  {details && details.id !== -1 ? (
+                    <ItemCard item={item} details={details} />
+                  ) : (
+                    <div className="bg-gray-200 text-gray-500 p-4 rounded-xl">
+                      <p>Details not available for {item.name}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
