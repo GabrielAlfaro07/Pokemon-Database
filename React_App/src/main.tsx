@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         responseType: "token id_token",
       }}
     >
-      <ItemDex />
+      <PokeDex />
     </Auth0Provider>
   </React.StrictMode>
 );

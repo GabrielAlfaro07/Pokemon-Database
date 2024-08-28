@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import ItemCard from "./components/ItemCard";
 import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
-import CategoryDropdown from "./components/CategoryDropdown"; // Assuming you have a CategoryDropdown component
+import CategoryDropdown from "./components/CategoryDropdown";
+import AccountButton from "./components/AccountButton";
 
 interface Item {
   name: string;
@@ -21,7 +22,7 @@ interface ItemDetails {
   sprites: {
     default: string;
   };
-  category: ItemCategory; // Updated to include category
+  category: ItemCategory;
 }
 
 const PAGE_SIZE = 100;
@@ -87,7 +88,6 @@ const ItemDex = () => {
           console.error(
             `Error fetching details for ${item.name}: ${error.message}`
           );
-          // Store a fallback empty object if fetching fails
           setItemDetails((prevDetails) => ({
             ...prevDetails,
             [item.name]: {
@@ -153,6 +153,7 @@ const ItemDex = () => {
             onChange={handleCategoryChange}
           />
           <SearchBar searchQuery={searchQuery} setSearchQuery={handleSearch} />
+          <AccountButton />
         </div>
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">

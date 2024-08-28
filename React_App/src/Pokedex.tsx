@@ -3,6 +3,7 @@ import PokemonCard from "./components/PokemonCard";
 import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
 import TypeDropdown from "./components/TypeDropdown";
+import AccountButton from "./components/AccountButton"; // Import AccountButton
 
 interface Pokemon {
   name: string;
@@ -143,6 +144,7 @@ const PokeDex = () => {
             onChange={handleTypeChange}
           />
           <SearchBar searchQuery={searchQuery} setSearchQuery={handleSearch} />
+          <AccountButton />
         </div>
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
