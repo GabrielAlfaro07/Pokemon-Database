@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import PokeDex from "./PokeDex.tsx";
 import "./index.css";
 import ItemDex from "./ItemDex.tsx";
+import FavoritesDex from "./FavoritesDex.tsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
