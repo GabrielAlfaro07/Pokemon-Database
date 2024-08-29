@@ -16,18 +16,27 @@ interface PokemonType {
 
 interface PokemonDetails {
   id: number;
+  name: string;
   sprites: {
     front_default: string;
   };
   types: PokemonType[];
 }
 
+interface FavoritePokemon {
+  id: string;
+  name: string;
+  url: string;
+}
+
 const PAGE_SIZE = 10;
 
 const FavoritesDex = () => {
   const { user, isAuthenticated } = useAuth0();
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [displayedFavorites, setDisplayedFavorites] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<FavoritePokemon[]>([]);
+  const [displayedFavorites, setDisplayedFavorites] = useState<
+    FavoritePokemon[]
+  >([]);
   const [pokemonDetails, setPokemonDetails] = useState<{
     [name: string]: PokemonDetails;
   }>({});
@@ -40,6 +49,7 @@ const FavoritesDex = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
+      console.log("Auth0 User ID:", user.sub); // Add this line
       fetchFavorites();
     }
   }, [isAuthenticated, user]);
@@ -54,11 +64,47 @@ const FavoritesDex = () => {
 
   const fetchFavorites = async () => {
     setLoading(true);
+    console.log("Authenticated user ID:", user!.sub);
     try {
-      const favs = await getFavorites(user!.sub);
-      setFavorites(favs);
-      setTotalPages(Math.ceil(favs.length / PAGE_SIZE));
+      const favIds = await getFavorites(user!.sub);
+      if (!favIds || favIds.length === 0) {
+        setError("No favorite Pokémon found.");
+        return;
+      }
+
+      const favPokemon = await Promise.all(
+        favIds.map(async (pokemonId) => {
+          try {
+            const response = await fetch(
+              `https://pokeapi.co/api/v2/pokemon/${pokemonId}`
+            );
+            if (!response.ok)
+              throw new Error(`Failed to fetch details for ${pokemonId}`);
+            const data: PokemonDetails = await response.json();
+            return {
+              id: pokemonId,
+              name: data.name,
+              url: `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
+            };
+          } catch (fetchError) {
+            console.error(fetchError.message);
+            // Return null for failed fetches
+            return null;
+          }
+        })
+      );
+
+      const validFavorites = favPokemon.filter((pokemon) => pokemon !== null);
+
+      if (validFavorites.length === 0) {
+        setError("Failed to fetch details for all favorite Pokémon.");
+        return;
+      }
+
+      setFavorites(validFavorites as FavoritePokemon[]);
+      setTotalPages(Math.ceil(validFavorites.length / PAGE_SIZE));
     } catch (error) {
+      console.error("Error in fetchFavorites:", error);
       setError("Failed to fetch favorite Pokémon.");
     } finally {
       setLoading(false);
@@ -66,18 +112,16 @@ const FavoritesDex = () => {
   };
 
   const fetchPokemonDetails = async () => {
-    for (const pokemonId of favorites) {
-      if (!pokemonDetails[pokemonId]) {
+    for (const { name, url } of favorites) {
+      if (!pokemonDetails[name]) {
         try {
-          const response = await fetch(
-            `https://pokeapi.co/api/v2/pokemon/${pokemonId}`
-          );
+          const response = await fetch(url);
           if (!response.ok)
-            throw new Error(`Failed to fetch details for ${pokemonId}`);
+            throw new Error(`Failed to fetch details for ${name}`);
           const data: PokemonDetails = await response.json();
           setPokemonDetails((prevDetails) => ({
             ...prevDetails,
-            [pokemonId]: data,
+            [name]: data,
           }));
         } catch (error) {
           console.error(error.message);
@@ -87,16 +131,15 @@ const FavoritesDex = () => {
   };
 
   const updateDisplayedFavorites = () => {
-    const filteredFavorites = favorites.filter((pokemonId) => {
-      const matchesSearch = pokemonId
+    const filteredFavorites = favorites.filter(({ name }) => {
+      const matchesSearch = name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const matchesType = selectedType
-        ? pokemonDetails[pokemonId]?.types.some(
+        ? pokemonDetails[name]?.types.some(
             (typeInfo) => typeInfo.type.name === selectedType
           )
         : true;
-
       return matchesSearch && matchesType;
     });
 
@@ -160,11 +203,14 @@ const FavoritesDex = () => {
           <div>No favorite Pokémon found</div>
         ) : (
           <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5">
-            {displayedFavorites.map((pokemonId, index) => (
+            {displayedFavorites.map(({ id, name }, index) => (
               <div key={index} className="pokemon-item flex justify-center">
                 <PokemonCard
-                  pokemon={pokemonId}
-                  details={pokemonDetails[pokemonId]}
+                  pokemon={{
+                    name,
+                    url: `https://pokeapi.co/api/v2/pokemon/${id}`,
+                  }}
+                  details={pokemonDetails[name]}
                 />
               </div>
             ))}

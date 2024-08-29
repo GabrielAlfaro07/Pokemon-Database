@@ -5,38 +5,47 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  deleteDoc,
   updateDoc,
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
 
-const FAVORITES_COLLECTION = "favorites";
+const USERS_COLLECTION = "users";
+const FAVORITES_SUBCOLLECTION = "favorites";
 
 export const getFavorites = async (userId: string) => {
-  const docRef = doc(db, FAVORITES_COLLECTION, userId);
-  const docSnap = await getDoc(docRef);
+  const favoritesCollectionRef = collection(
+    db,
+    USERS_COLLECTION,
+    userId,
+    FAVORITES_SUBCOLLECTION
+  );
 
-  if (docSnap.exists()) {
-    return docSnap.data().pokemon || [];
-  } else {
-    return [];
-  }
+  const favoritesSnapshot = await getDocs(favoritesCollectionRef);
+  const favoritePokemon = favoritesSnapshot.docs.map((doc) => doc.id);
+
+  return favoritePokemon;
 };
 
 export const addFavorite = async (userId: string, pokemonId: string) => {
-  const docRef = doc(db, FAVORITES_COLLECTION, userId);
-  await setDoc(
-    docRef,
-    {
-      pokemon: arrayUnion(pokemonId),
-    },
-    { merge: true }
+  const docRef = doc(
+    db,
+    USERS_COLLECTION,
+    userId,
+    FAVORITES_SUBCOLLECTION,
+    pokemonId
   );
+  await setDoc(docRef, { pokemonId });
 };
 
 export const removeFavorite = async (userId: string, pokemonId: string) => {
-  const docRef = doc(db, FAVORITES_COLLECTION, userId);
-  await updateDoc(docRef, {
-    pokemon: arrayRemove(pokemonId),
-  });
+  const docRef = doc(
+    db,
+    USERS_COLLECTION,
+    userId,
+    FAVORITES_SUBCOLLECTION,
+    pokemonId
+  );
+  await deleteDoc(docRef);
 };
