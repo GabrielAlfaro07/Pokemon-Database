@@ -6,6 +6,7 @@ import TypeDropdown from "./components/TypeDropdown";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getFavorites } from "./services/FavoritesService";
 import AccountButton from "./components/AccountButton";
+import { useUserData } from "./hooks/UseUserData"; // Import your hook
 
 interface PokemonType {
   type: {
@@ -33,6 +34,7 @@ const PAGE_SIZE = 10;
 
 const FavoritesDex = () => {
   const { user, isAuthenticated } = useAuth0();
+  const isUserDataInitialized = useUserData(); // Use the hook
   const [favorites, setFavorites] = useState<FavoritePokemon[]>([]);
   const [displayedFavorites, setDisplayedFavorites] = useState<
     FavoritePokemon[]
@@ -48,10 +50,10 @@ const FavoritesDex = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user && isUserDataInitialized) {
       fetchFavorites();
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, isUserDataInitialized]);
 
   useEffect(() => {
     updateDisplayedFavorites();
@@ -65,7 +67,11 @@ const FavoritesDex = () => {
     setLoading(true);
     try {
       const favIds = await getFavorites(user!.sub); // Use user.sub here
-      if (!favIds || favIds.length === 0) {
+
+      // Filter out the "init" document
+      const filteredFavIds = favIds.filter((pokemonId) => pokemonId !== "init");
+
+      if (!filteredFavIds || filteredFavIds.length === 0) {
         setError("No favorite Pokémon found.");
         setFavorites([]);
         setLoading(false);
@@ -73,7 +79,7 @@ const FavoritesDex = () => {
       }
 
       const favPokemon = await Promise.all(
-        favIds.map(async (pokemonId) => {
+        filteredFavIds.map(async (pokemonId) => {
           try {
             const response = await fetch(
               `https://pokeapi.co/api/v2/pokemon/${pokemonId}`
@@ -90,8 +96,6 @@ const FavoritesDex = () => {
             console.error("Error in fetchFavorites:", error);
             setError("Failed to fetch favorite Pokémon.");
             setFavorites([]);
-          } finally {
-            setLoading(false);
           }
         })
       );
