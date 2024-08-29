@@ -15,7 +15,7 @@ const Sidebar = () => {
     <div
       className={`flex ${
         isOpen ? "w-64" : "w-16"
-      } bg-gray-800 h-screen p-5 pt-8 relative transition-width duration-300 ease-in-out`}
+      } bg-gray-800 h-auto p-5 pt-8 transition-width duration-300 ease-in-out`}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
