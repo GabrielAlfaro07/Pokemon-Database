@@ -49,7 +49,6 @@ const FavoritesDex = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      console.log("Auth0 User ID:", user.sub); // Add this line
       fetchFavorites();
     }
   }, [isAuthenticated, user]);
@@ -64,11 +63,12 @@ const FavoritesDex = () => {
 
   const fetchFavorites = async () => {
     setLoading(true);
-    console.log("Authenticated user ID:", user!.sub);
     try {
-      const favIds = await getFavorites(user!.sub);
+      const favIds = await getFavorites(user!.sub); // Use user.sub here
       if (!favIds || favIds.length === 0) {
         setError("No favorite Pokémon found.");
+        setFavorites([]);
+        setLoading(false);
         return;
       }
 
@@ -86,10 +86,12 @@ const FavoritesDex = () => {
               name: data.name,
               url: `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
             };
-          } catch (fetchError) {
-            console.error(fetchError.message);
-            // Return null for failed fetches
-            return null;
+          } catch (error) {
+            console.error("Error in fetchFavorites:", error);
+            setError("Failed to fetch favorite Pokémon.");
+            setFavorites([]);
+          } finally {
+            setLoading(false);
           }
         })
       );
@@ -97,15 +99,16 @@ const FavoritesDex = () => {
       const validFavorites = favPokemon.filter((pokemon) => pokemon !== null);
 
       if (validFavorites.length === 0) {
-        setError("Failed to fetch details for all favorite Pokémon.");
-        return;
+        setError("Failed to fetch details for any favorite Pokémon.");
+        setFavorites([]);
+      } else {
+        setFavorites(validFavorites as FavoritePokemon[]);
+        setTotalPages(Math.ceil(validFavorites.length / PAGE_SIZE));
       }
-
-      setFavorites(validFavorites as FavoritePokemon[]);
-      setTotalPages(Math.ceil(validFavorites.length / PAGE_SIZE));
     } catch (error) {
       console.error("Error in fetchFavorites:", error);
       setError("Failed to fetch favorite Pokémon.");
+      setFavorites([]);
     } finally {
       setLoading(false);
     }
@@ -170,15 +173,13 @@ const FavoritesDex = () => {
           <h1 className="text-2xl m-0">Your Favorite Pokémon</h1>
           <AccountButton />
         </header>
-        <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
+        <div className="bg-white text-gray-700 p-4 rounded-2xl flex-grow overflow-auto text-center text-lg">
+          <p>You are not logged in any account.</p>
           <p>Please log in to view your favorite Pokémon.</p>
         </div>
       </div>
     );
   }
-
-  if (loading) return <div className="loader">Loading...</div>;
-  if (error) return <div className="error-message">Error: {error}</div>;
 
   return (
     <div className="FavoritesDex bg-blue-400 text-white flex flex-col min-h-screen p-4">
@@ -194,27 +195,35 @@ const FavoritesDex = () => {
         </div>
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
-        <PaginationButtons
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(newPage) => setCurrentPage(newPage)}
-        />
-        {displayedFavorites.length === 0 ? (
-          <div>No favorite Pokémon found</div>
-        ) : (
-          <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5">
-            {displayedFavorites.map(({ id, name }, index) => (
-              <div key={index} className="pokemon-item flex justify-center">
-                <PokemonCard
-                  pokemon={{
-                    name,
-                    url: `https://pokeapi.co/api/v2/pokemon/${id}`,
-                  }}
-                  details={pokemonDetails[name]}
-                />
-              </div>
-            ))}
+        {loading ? (
+          <div className="loader text-lg">Loading...</div>
+        ) : error ? (
+          <div className="text-center text-gray-700 text-lg">{error}</div>
+        ) : displayedFavorites.length === 0 ? (
+          <div className="text-center text-gray-700 text-lg">
+            No favorite Pokemon found.
           </div>
+        ) : (
+          <>
+            <PaginationButtons
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(newPage) => setCurrentPage(newPage)}
+            />
+            <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5">
+              {displayedFavorites.map(({ id, name }, index) => (
+                <div key={index} className="pokemon-item flex justify-center">
+                  <PokemonCard
+                    pokemon={{
+                      name,
+                      url: `https://pokeapi.co/api/v2/pokemon/${id}`,
+                    }}
+                    details={pokemonDetails[name]}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

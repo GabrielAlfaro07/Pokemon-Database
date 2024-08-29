@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 const Profile = () => {
@@ -10,12 +10,21 @@ const Profile = () => {
   }
 
   const saveUserData = async () => {
-    if (isAuthenticated && user?.email) {
-      const userRef = doc(db, "users", user.email);
+    if (isAuthenticated && user?.sub) {
+      const userRef = doc(db, "users", user.sub); // Use user.sub instead of user.email
       const docSnap = await getDoc(userRef);
 
       if (!docSnap.exists()) {
-        await setDoc(userRef, { teams: [], favorites: [] });
+        // Create the user document
+        await setDoc(userRef, {});
+
+        // Create the "favorites" and "teams" subcollections
+        const favoritesRef = collection(userRef, "favorites");
+        const teamsRef = collection(userRef, "teams");
+
+        // Optionally, initialize with empty documents or leave them empty
+        await setDoc(doc(favoritesRef, "init"), {});
+        await setDoc(doc(teamsRef, "init"), {});
       }
     }
   };
