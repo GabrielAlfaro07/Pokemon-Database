@@ -1,5 +1,3 @@
-import React from "react";
-
 interface Item {
   name: string;
   url: string;
@@ -109,7 +107,11 @@ const ItemCard = ({ item, details }: Props) => {
           className="absolute bottom-2 right-2 w-[70px] h-[70px] z-[1]"
         />
       ) : (
-        <img src="/no-image.png" alt="No image available" />
+        <img
+          src="/src/assets/missingno.png"
+          alt="No image available"
+          className="absolute bottom-4 right-4 opacity-70 w-[60px] h-[60px] z-[1]"
+        />
       )}
       <h1 className="absolute top-0 left-2 text-[1.3em] text-gray-100 font-bold z-[1]">
         {capitalizeWords(item.name)}

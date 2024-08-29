@@ -144,7 +144,7 @@ const ItemDex = () => {
   if (error) return <div className="error-message">Error: {error}</div>;
 
   return (
-    <div className="ItemDex bg-red-400 text-white flex flex-col min-h-screen p-4">
+    <div className="ItemDex bg-green-400 text-white flex flex-col min-h-screen p-4">
       <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
         <h1 className="text-2xl m-0">ItemDex</h1>
         <div className="flex items-center space-x-4">

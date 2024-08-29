@@ -74,7 +74,11 @@ const PokemonCard = ({ pokemon, details }: Props) => {
           className="absolute bottom-0 right-0 w-[100px] h-[100px] z-[1]"
         />
       ) : (
-        <img src="/no-image.png" alt="No image available" />
+        <img
+          src="/src/assets/missingno.png"
+          alt="No image available"
+          className="absolute bottom-4 right-4 opacity-70 w-[60px] h-[60px] z-[1]"
+        />
       )}
       <h1 className="absolute top-0 left-2 text-[1.3em] text-gray-100 font-bold z-[1]">
         {capitalizeWords(pokemon.name)}
