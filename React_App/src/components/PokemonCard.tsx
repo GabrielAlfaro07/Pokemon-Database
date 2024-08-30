@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 interface Pokemon {
   name: string;
   url: string;
@@ -56,6 +58,12 @@ function capitalizeWords(name: string): string {
 }
 
 const PokemonCard = ({ pokemon, details }: Props) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/pokemon/${pokemon.name}`, { state: { pokemon, details } });
+  };
+
   if (!details) return <div>Loading details...</div>;
 
   const backgroundColor = details?.types?.[0]
@@ -64,6 +72,7 @@ const PokemonCard = ({ pokemon, details }: Props) => {
 
   return (
     <div
+      onClick={handleCardClick}
       className="relative bg-gray-800 rounded-xl p-4 text-left w-[200px] h-[110px] overflow-hidden transition-transform transform hover:translate-y-[-10px]"
       style={{ backgroundColor }}
     >
