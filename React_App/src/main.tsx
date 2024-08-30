@@ -11,6 +11,7 @@ import Sidebar from "./components/Sidebar";
 import Home from "./Home"; // Uncomment if Home component is available
 import "./index.css";
 import { useUserData } from "./hooks/UseUserData.tsx";
+import TeamsDex from "./TeamsDex.tsx";
 
 const App = () => {
   useUserData(); // Initialize user data when the app starts
@@ -40,8 +41,7 @@ const App = () => {
           <Route path="/pokemon/:name" element={<PokemonDetailsPage />} />
           <Route path="/itemdex" element={<ItemDex />} />
           <Route path="/favorites" element={<FavoritesDex />} />
-          <Route path="/teams" />{" "}
-          {/* Uncomment if Teams component is available */}
+          <Route path="/teams" element={<TeamsDex />} />
         </Routes>
       </div>
     </div>
