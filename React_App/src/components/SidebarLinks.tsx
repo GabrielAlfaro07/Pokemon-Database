@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FC } from "react";
 import { IconType } from "react-icons";
 
@@ -14,17 +14,25 @@ const SidebarLink: FC<SidebarLinkProps> = ({
   icon: Icon,
   label,
   isOpen,
-}) => (
-  <Link to={to} className="flex items-center space-x-4 text-white">
-    <Icon size={24} />
-    <span
-      className={`transition-opacity duration-300 ${
-        isOpen ? "opacity-100 ml-4" : "opacity-0 ml-0"
-      }`}
+}) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+
+  return (
+    <Link
+      to={to}
+      className={`flex items-center space-x-4 text-white p-3 rounded-lg transition-all duration-300 
+        ${isActive ? "bg-gray-700" : "hover:bg-gray-600"}`}
     >
-      {label}
-    </span>
-  </Link>
-);
+      <Icon size={24} />
+      <span
+        className={`transition-opacity duration-300 
+          ${isOpen ? "opacity-100 ml-4" : "opacity-0 ml-0"}`}
+      >
+        {label}
+      </span>
+    </Link>
+  );
+};
 
 export default SidebarLink;

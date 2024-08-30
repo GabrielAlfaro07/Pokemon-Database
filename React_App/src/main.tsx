@@ -8,14 +8,14 @@ import FavoritesDex from "./FavoritesDex.tsx";
 import PokemonDetailsPage from "./PokemonDetailsPage";
 // import Teams from "./Teams.tsx"; // Uncomment if Teams component is available
 import Sidebar from "./components/Sidebar";
-// import Home from "./Home"; // Uncomment if Home component is available
+import Home from "./Home"; // Uncomment if Home component is available
 import "./index.css";
 import { useUserData } from "./hooks/UseUserData.tsx";
 
 const App = () => {
   useUserData(); // Initialize user data when the app starts
 
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
 
   React.useEffect(() => {
     // Handle redirection after authentication
@@ -35,7 +35,7 @@ const App = () => {
       <Sidebar />
       <div className="flex-grow">
         <Routes>
-          <Route path="/" />
+          <Route path="/" element={<Home />} />
           <Route path="/pokedex" element={<PokeDex />} />
           <Route path="/pokemon/:name" element={<PokemonDetailsPage />} />
           <Route path="/itemdex" element={<ItemDex />} />

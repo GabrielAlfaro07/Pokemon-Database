@@ -3,7 +3,7 @@ import PokemonCard from "./components/PokemonCard";
 import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
 import TypeDropdown from "./components/TypeDropdown";
-import AccountButton from "./components/AccountButton"; // Import AccountButton
+import AccountButton from "./components/AccountButton";
 
 interface Pokemon {
   name: string;
@@ -85,7 +85,17 @@ const PokeDex = () => {
             [pokemon.name]: data,
           }));
         } catch (error) {
-          console.error(error.message);
+          console.error(
+            `Error fetching details for ${pokemon.name}: ${error.message}`
+          );
+          setPokemonDetails((prevDetails) => ({
+            ...prevDetails,
+            [pokemon.name]: {
+              id: -1,
+              sprites: { front_default: "" },
+              types: [{ type: { name: "Unknown", url: "#" } }],
+            },
+          }));
         }
       }
     }
@@ -157,14 +167,20 @@ const PokeDex = () => {
           <div>No Pokémon found</div>
         ) : (
           <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5">
-            {displayedPokemon.map((pokemon, index) => (
-              <div key={index} className="pokemon-item flex justify-center">
-                <PokemonCard
-                  pokemon={pokemon}
-                  details={pokemonDetails[pokemon.name]}
-                />
-              </div>
-            ))}
+            {displayedPokemon.map((pokemon, index) => {
+              const details = pokemonDetails[pokemon.name];
+              return (
+                <div key={index} className="pokemon-item flex justify-center">
+                  {details && details.id !== -1 ? (
+                    <PokemonCard pokemon={pokemon} details={details} />
+                  ) : (
+                    <div className="bg-gray-200 text-gray-500 p-4 rounded-xl">
+                      <p>Details not available for {pokemon.name}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
