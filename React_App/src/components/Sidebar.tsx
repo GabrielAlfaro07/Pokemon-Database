@@ -14,12 +14,12 @@ const Sidebar = () => {
   return (
     <div
       className={`flex ${
-        isOpen ? "w-64" : "w-16"
-      } bg-gray-800 h-auto p-5 pt-8 transition-width duration-300 ease-in-out`}
+        isOpen ? "w-60" : "w-16"
+      } bg-gray-800 h-auto p-2 pt-8 transition-width duration-300 ease-in-out`}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <div className="flex flex-col space-y-10">
+      <div className="flex flex-col space-y-4">
         <SidebarLink to="/" icon={FaHome} label="Home" isOpen={isOpen} />
         <SidebarLink
           to="/pokedex"
