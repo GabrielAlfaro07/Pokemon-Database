@@ -62,13 +62,13 @@ function DisplayPokeball() {
           setAnimationStage(0);
           setIsAnimating(false);
           setIsOpening(false);
-        }, 500);
+        }, 250);
       } else if (isClosing) {
         timer = setTimeout(() => {
           setAnimationStage(2);
           setIsAnimating(false);
           setIsClosing(false);
-        }, 500);
+        }, 250);
       } else if (animationStage === 1) {
         timer = setTimeout(() => {
           if (isOpening) {
@@ -77,7 +77,7 @@ function DisplayPokeball() {
             setAnimationStage(2);
           }
           setIsAnimating(false);
-        }, 500);
+        }, 250);
       }
     }
 
