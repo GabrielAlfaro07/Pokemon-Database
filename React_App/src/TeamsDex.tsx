@@ -4,6 +4,7 @@ import { getTeams } from "./services/TeamsService";
 import TeamCard from "./components/TeamCard";
 import AccountButton from "./components/AccountButton";
 import { useUserData } from "./hooks/UseUserData";
+import CreateTeamButton from "./components/CreateTeamButton";
 
 interface Team {
   id: string;
@@ -97,6 +98,9 @@ const TeamsDex = () => {
             ))}
           </div>
         )}
+        <div className="flex justify-center mt-4">
+          <CreateTeamButton />
+        </div>
       </div>
     </div>
   );
