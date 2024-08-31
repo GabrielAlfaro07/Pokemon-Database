@@ -33,7 +33,10 @@ function Home() {
         `https://pokeapi.co/api/v2/pokemon/${randomId}`
       );
       const data = await response.json();
-      setRandomPokemon({ name: data.name, url: `https://pokeapi.co/api/v2/pokemon/${randomId}` });
+      setRandomPokemon({
+        name: data.name,
+        url: `https://pokeapi.co/api/v2/pokemon/${randomId}`,
+      });
       setPokemonDetails(data);
     } catch (error) {
       console.error("Error fetching random Pokemon:", error);
@@ -66,7 +69,7 @@ function Home() {
       </header>
 
       {/* Contenedor con fondo blanco y bordes redondeados */}
-      <div className="bg-white rounded-lg p-6 text-black">
+      <div className="bg-white rounded-2xl p-6 text-black">
         {!selectedGeneration ? (
           <div className="p-5 text-center">
             <h2 className="text-2xl font-bold">Bienvenido a PokeWiki</h2>
@@ -90,7 +93,7 @@ function Home() {
                   {regions.map((region) => (
                     <button
                       key={region.name}
-                      className="bg-gray-200 text-gray-800 px-5 py-2 rounded-lg transition-all duration-300 hover:bg-red-500 hover:text-white"
+                      className="bg-gray-200 text-gray-800 px-5 py-2 rounded-full transition-all duration-300 hover:bg-red-500 hover:text-white"
                       onClick={() => handleGenerationClick(region.name)}
                     >
                       {region.name}
@@ -100,7 +103,7 @@ function Home() {
               )}
             </div>
 
-            <div className="mt-8 bg-gray-200 p-4 rounded-lg">
+            <div className="mt-8 bg-gray-200 p-4 rounded-2xl">
               <h3 className="text-xl font-semibold">¿Sabías Que?</h3>
               <p className="mt-2">
                 ¿Sabías que Arcanine fue originalmente planeado para ser un
@@ -123,6 +126,3 @@ function Home() {
 }
 
 export default Home;
-
-
-
