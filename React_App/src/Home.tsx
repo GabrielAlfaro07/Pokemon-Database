@@ -19,9 +19,7 @@ function Home() {
   return (
     <div className="min-h-screen bg-red-500 font-poppins p-4">
       <header
-        className={`bg-gray-700 text-white text-xl p-4 rounded-full mb-4 flex justify-between items-center transition-colors duration-300`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className={`bg-gray-700 text-white text-xl p-4 rounded-full mb-4 flex justify-between items-center`}
       >
         <h1 className="text-2xl m-0">PokeWiki</h1>
         <AccountButton />

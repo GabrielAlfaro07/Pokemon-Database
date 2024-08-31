@@ -2,11 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
-import PokeDex from "./PokeDex.tsx";
+import PokeDex from "./Pokedex.tsx";
 import ItemDex from "./ItemDex.tsx";
 import FavoritesDex from "./FavoritesDex.tsx";
 import PokemonDetailsPage from "./PokemonDetailsPage";
-// import Teams from "./Teams.tsx"; // Uncomment if Teams component is available
 import Sidebar from "./components/Sidebar";
 import Home from "./Home"; // Uncomment if Home component is available
 import "./index.css";
