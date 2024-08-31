@@ -44,17 +44,12 @@ const GenerationView: React.FC<GenerationViewProps> = ({
   const renderMapImage = () => {
     switch (generation) {
       case "Kanto":
-        return (
-          <img src={Kanto_Map} alt="Mapa de Kanto" className="w-full h-auto" />
-        );
+
+        return <img src={Kanto_Map} alt="Mapa de Kanto" className="w-full h-auto" />;
       case "Johto":
-        return (
-          <img src={Johto_Map} alt="Mapa de Johto" className="w-full h-auto" />
-        );
+        return <img src={Johto_Map} alt="Mapa de Johto" className="w-full h-auto" />;
       case "Hoenn":
-        return (
-          <img src={Hoenn_Map} alt="Mapa de Hoenn" className="w-full h-auto" />
-        );
+        return <img src={Hoenn_Map} alt="Mapa de Hoenn" className="w-full h-auto" />;
       default:
         return null;
     }
@@ -71,7 +66,9 @@ const GenerationView: React.FC<GenerationViewProps> = ({
       <h2 className="text-xl font-bold">Information about {generation}</h2>
 
       {/* Renderizar la imagen del mapa */}
-      <div className="mt-4">{renderMapImage()}</div>
+      <div className="mt-4">
+        {renderMapImage()}
+      </div>
 
       <div>
         <h3 className="mt-4 font-semibold">Locations in {generation}:</h3>
