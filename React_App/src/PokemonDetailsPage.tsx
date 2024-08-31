@@ -4,6 +4,9 @@ import DisplayPokeball from "./components/DisplayPokeball";
 import { changeInitialToMayus } from "./components/ChangeInitialToMayus";
 import { getTypeColor, darkenColor } from "./components/TypeColor";
 import { soundEffect } from "./components/Sound";
+import AddToTeamButton from "./components/AddToTeamButton"; // Import the new component
+import { useAuth0 } from "@auth0/auth0-react";
+
 interface Move {
   move: {
     name: string;
@@ -56,6 +59,8 @@ interface StatBarProps {
 }
 
 const PokemonDetailsPage = () => {
+  const { user } = useAuth0(); // Add this line to access Auth0 user data
+  const userId = user?.sub; // Get the user ID (sub)
   const [loaded, setLoaded] = useState(false);
   const location = useLocation();
   const { pokemon } = location.state as { pokemon: Pokemon };
@@ -241,26 +246,24 @@ const PokemonDetailsPage = () => {
   };
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-white to-gray-100 relative">
-      <div className="flex justify-between items-center w-full px-4 py-6 bg-white shadow-lg static">
+      <div className="flex justify-between items-center w-full px-4 py-6 bg-white shadow-lg">
         <h1 className="text-2xl font-bold">{name}</h1>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div className="flex items-center space-x-4">
           <button
-            className="px-2 py-1 bg-black rounded-lg -translate-x-10"
+            className="px-2 py-1 bg-black rounded-lg"
             onClick={() => window.history.back()}
           >
             <p className="text-sm font-bold text-white">Back</p>
           </button>
-          <button
-            className="px-2 py-1 rounded-lg -translate-x-10"
-            style={{ backgroundColor: colorback }}
-          >
-            <p className="text-sm font-bold text-white">Add to team</p>
-          </button>
-          <DisplayPokeball />
+          <AddToTeamButton
+            pokemonId={details.id.toString()}
+            color={colorback}
+          />
+          <DisplayPokeball pokemonId={details.id.toString()} userId={userId} />
           {details.types.map((type) => (
             <div
               key={type.type.name}
-              className="px-2 py-1 bg-gray-200 rounded-lg"
+              className="px-2 py-1 rounded-lg"
               style={{ backgroundColor: getTypeColor(type.type.name) }}
             >
               <p className="text-sm font-bold text-white">

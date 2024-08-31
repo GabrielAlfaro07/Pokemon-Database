@@ -21,10 +21,12 @@ export const getTeams = async (userId: string) => {
       TEAMS_SUBCOLLECTION
     );
     const teamsSnapshot = await getDocs(teamsCollectionRef);
-    const teams = teamsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const teams = teamsSnapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .filter((team) => team.id !== "init"); // Filter out the "init" team
     return teams;
   } catch (error) {
     console.error("Error fetching teams: ", error);
