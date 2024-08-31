@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import AccountButton from "./components/AccountButton";
 import GenerationView from "./components/GenerationView";
 import PokemonCard from "./components/PokemonCard";
+import { changeInitialToMayus } from "./components/ChangeInitialToMayus";
 
 function Home() {
-  const [isHovered, setIsHovered] = useState(false);
   const [selectedGeneration, setSelectedGeneration] = useState<string | null>(
     null
   );
@@ -27,7 +27,7 @@ function Home() {
   }, []);
 
   const fetchRandomPokemon = async () => {
-    const randomId = Math.floor(Math.random() * 1010) + 1;
+    const randomId = Math.floor(Math.random() * 1025) + 1;
     try {
       const response = await fetch(
         `https://pokeapi.co/api/v2/pokemon/${randomId}`
@@ -96,7 +96,7 @@ function Home() {
                       className="bg-gray-200 text-gray-800 px-5 py-2 rounded-full transition-all duration-300 hover:bg-red-500 hover:text-white"
                       onClick={() => handleGenerationClick(region.name)}
                     >
-                      {region.name}
+                      {changeInitialToMayus(region.name)}
                     </button>
                   ))}
                 </div>
