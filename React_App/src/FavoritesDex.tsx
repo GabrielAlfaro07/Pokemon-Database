@@ -178,7 +178,7 @@ const FavoritesDex = () => {
           <AccountButton />
         </header>
         <div className="bg-white text-gray-700 p-4 rounded-2xl flex-grow overflow-auto text-center text-lg">
-          <p>You are not logged in any account.</p>
+          <p>You are not logged into any account.</p>
           <p>Please log in to view your favorite Pokémon.</p>
         </div>
       </div>
