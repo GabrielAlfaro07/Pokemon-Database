@@ -7,10 +7,8 @@ function DisplayPokeball() {
     const [animationStage, setAnimationStage] = useState(0);
     const [isOpening, setIsOpening] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
-  
     useEffect(() => {
       let timer: ReturnType<typeof setTimeout>;
-  
       if (isAnimating) {
         if (isOpening) {
           timer = setTimeout(() => {
