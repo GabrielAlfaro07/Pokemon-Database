@@ -158,6 +158,16 @@ const PokeDex = () => {
         </div>
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
+        <div className="p-4 text-black text-center">
+          <h2 className="text-4xl font-bold">PokéDex</h2>
+          <p className="mt-4 text-lg">
+            La PokéDex es una enciclopedia virtual de alta tecnología que
+            contiene información sobre todos los Pokémon.
+          </p>
+          <p className="mb-4 text-lg">
+            Aquí puedes buscar información sobre el Pokemón que desees.
+          </p>
+        </div>
         <PaginationButtons
           currentPage={currentPage}
           totalPages={totalPages}

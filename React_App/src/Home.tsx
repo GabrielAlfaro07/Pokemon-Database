@@ -71,9 +71,9 @@ function Home() {
       {/* Contenedor con fondo blanco y bordes redondeados */}
       <div className="bg-white rounded-2xl p-6 text-black">
         {!selectedGeneration ? (
-          <div className="p-5 text-center">
-            <h2 className="text-2xl font-bold">Bienvenido a PokeWiki</h2>
-            <p className="mt-4">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold">Bienvenido a PokeWiki</h2>
+            <p className="mt-4 text-lg">
               Aquí puedes encontrar información sobre tus Pokémon favoritos
             </p>
             <p>Explora el mundo de los Pokémon y sus asombrosas habilidades</p>

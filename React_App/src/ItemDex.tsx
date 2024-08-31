@@ -157,6 +157,16 @@ const ItemDex = () => {
         </div>
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
+        <div className="p-4 text-black text-center">
+          <h2 className="text-4xl font-bold">ItemDex</h2>
+          <p className="mt-4 text-lg">
+            La ItemDex es una enciclopedia virtual que acoge información sobre
+            todos los Items que existen en el mundo Pokémon.
+          </p>
+          <p className="mb-4 text-lg">
+            Aquí puedes buscar información sobre el Ítem que desees.
+          </p>
+        </div>
         <PaginationButtons
           currentPage={currentPage}
           totalPages={totalPages}

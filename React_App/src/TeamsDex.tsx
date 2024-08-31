@@ -54,6 +54,13 @@ const TeamsDex = () => {
           <AccountButton />
         </header>
         <div className="bg-white text-gray-700 p-4 rounded-2xl flex-grow overflow-auto text-center text-lg">
+          <div className="p-4 text-black text-center">
+            <h2 className="text-4xl font-bold">Equipos</h2>
+            <p className="m-4 text-lg">
+              Aquí podrás encontrar a todos los Equipos que hayas creado, así
+              como los Pokémon que hay en ellos.
+            </p>
+          </div>
           <p>You are not logged into any account.</p>
           <p>Please log in to view your Pokémon teams.</p>
         </div>
@@ -68,6 +75,13 @@ const TeamsDex = () => {
         <AccountButton />
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
+        <div className="p-4 text-black text-center">
+          <h2 className="text-4xl font-bold">Equipos</h2>
+          <p className="m-4 text-lg">
+            Aquí podrás encontrar a todos los Equipos que hayas creado, así como
+            los Pokémon que hay en ellos.
+          </p>
+        </div>
         {loading ? (
           <div className="loader text-lg">Loading...</div>
         ) : error ? (

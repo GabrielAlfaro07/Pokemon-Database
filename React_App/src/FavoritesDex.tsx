@@ -178,6 +178,13 @@ const FavoritesDex = () => {
           <AccountButton />
         </header>
         <div className="bg-white text-gray-700 p-4 rounded-2xl flex-grow overflow-auto text-center text-lg">
+          <div className="p-4 text-black text-center">
+            <h2 className="text-4xl font-bold">Favoritos</h2>
+            <p className="m-4 text-lg">
+              Aquí podrás encontrar a todos los Pokémon que hayas marcado como
+              favoritos en la Pokédex.
+            </p>
+          </div>
           <p>You are not logged into any account.</p>
           <p>Please log in to view your favorite Pokémon.</p>
         </div>
@@ -199,6 +206,13 @@ const FavoritesDex = () => {
         </div>
       </header>
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
+        <div className="p-4 text-black text-center">
+          <h2 className="text-4xl font-bold">Favoritos</h2>
+          <p className="m-4 text-lg">
+            Aquí podrás encontrar a todos los Pokémon que hayas marcado como
+            favoritos en la Pokédex.
+          </p>
+        </div>
         {loading ? (
           <div className="loader text-lg">Loading...</div>
         ) : error ? (
