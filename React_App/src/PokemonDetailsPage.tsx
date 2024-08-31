@@ -3,7 +3,17 @@ import { useLocation } from "react-router-dom";
 import openPokeball from "./assets/open-pokeball.png";
 import closePokeball from "./assets/closed-pokeball.png";
 import midClosedPokeball from "./assets/mid-closed-pokeball.png";
+interface Move {
+  move: {
+    name: string;
+    url: string;
+  };
 
+}
+interface MoveDetails {
+  pp: number;
+  type: string;
+}
 interface Pokemon {
   name: string;
   url: string;
@@ -31,6 +41,7 @@ interface PokemonDetails {
       url: string;
     };
   }[];
+  moves: Move[];
 }
 
 interface PokemonType {
@@ -199,7 +210,7 @@ const PokemonDetailsPage = () => {
 
   const StatBar: React.FC<StatBarProps> = ({ value }) => {
     const [currentValue, setCurrentValue] = useState(0);
-
+  
     useEffect(() => {
       const increment = value / 100;
       const interval = setInterval(() => {
@@ -211,54 +222,108 @@ const PokemonDetailsPage = () => {
           return prev + increment;
         });
       }, 10);
-
+  
       return () => clearInterval(interval);
     }, [value]);
-
+  
     return (
-      <div className="w-full bg-gray-200 rounded">
-        <div
-          className="h-2 rounded"
-          style={{
-            width: `${(currentValue / maxStatValue) * 100}%`,
-            backgroundColor: colorback,
-          }}
-        />
-      </div>
+      <div
+        className="h-3 w-full rounded"
+        style={{
+          width: `${(currentValue / maxStatValue) * 100}%`,
+          backgroundColor: colorback,
+        }}
+      />
     );
   };
-
+  
   const renderBaseStats = () => {
     return details.stats.map((stat) => (
-      <div key={stat.stat.name} className="flex items-center mb-2">
-        <div className="w-1/4 h-7">
-          <h2 className="text-gray-700 font-bold text-center">
-            {stat.base_stat}
-          </h2>
+      <div key={stat.stat.name} className="flex mb-2 space-x-20">
+        {/* Primer div: nombre del stat */}
+        <div className="w-40">
           <h2 className="text-xs font-bold text-left">
             {chancheInitialToMayus(stat.stat.name)}
           </h2>
         </div>
-        <div className="w-3/4">
+  
+        {/* Segundo div: barra de stat */}
+        <div className="w-full">
           <StatBar value={stat.base_stat} />
+        </div>
+  
+        {/* Tercer div: número del stat */}
+        <div className="w-1/4 text-right">
+          <h2 className="text-gray-700 font-bold">{stat.base_stat}</h2>
         </div>
       </div>
     ));
   };
 
-  const fetchPokemonDetails = async () => {
-    try {
-      const response = await fetch(pokemon.url);
-      if (!response.ok)
-        throw new Error(`Failed to fetch details for ${pokemon.name}`);
-      const data: PokemonDetails = await response.json();
-      return data;
-    } catch (error) {
-      console.error(error.message);
-    }
+  const MovesDisplay: React.FC = () => {
+    const [currentMoves, setCurrentMoves] = useState<Move[]>([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [moveDetails, setMoveDetails] = useState<MoveDetails[]>([]);
+  
+    useEffect(() => {
+      const moves = details.moves; // Obtener todos los movimientos
+  
+      // Función para obtener detalles de cada movimiento
+      const fetchMoveDetails = async () => {
+        const detailsPromises = moves.map(async (move) => {
+          const response = await fetch(move.move.url);
+          const data = await response.json();
+          return {
+            pp: data.pp,
+            type: data.type.name,
+          };
+        });
+  
+        const fetchedDetails = await Promise.all(detailsPromises);
+        setMoveDetails(fetchedDetails);
+      };
+  
+      fetchMoveDetails(); // Llamar la función para obtener los detalles
+    }, [details.moves]);
+  
+    useEffect(() => {
+      const intervalId = setInterval(() => {
+        const nextIndex = (currentIndex + 8) % details.moves.length; // Avanzar de 8 en 8
+        setCurrentIndex(nextIndex); // Actualizar el índice
+        setCurrentMoves(details.moves.slice(nextIndex, nextIndex + 8)); // Obtener los próximos 8 movimientos
+      }, 2000); // Cambiar cada 2 segundos
+  
+      return () => clearInterval(intervalId); // Limpiar intervalo al desmontar
+    }, [currentIndex, details.moves]);
+  
+    return (
+      <div className="flex flex-col items-center justify-center transition-all duration-900 ease-in-out h-full w-full">
+        {Array.from({ length: 2 }).map((_, rowIndex) => (
+          <div key={rowIndex} className="flex space-x-2 mb-2">
+            {currentMoves.slice(rowIndex * 4, rowIndex * 4 + 4).map((move, index) => {
+              const moveDetail = moveDetails[currentIndex + rowIndex * 4 + index];
+              const colorClass = getTypeColor(moveDetail?.type);
+              return (
+                <div
+                  key={move.move.name}
+                  className={`flex flex-col items-center justify-center p-2 text-white font-bold`}
+                  style={{
+                    backgroundColor: colorClass,
+                    borderRadius: "0.7rem",
+                    width: "120px", // Ajusta el ancho fijo
+                    height: "60px", // Ajusta el alto fijo
+                  }}
+                >
+                  <p className="text-sm text-center">{chancheInitialToMayus(move.move.name)}</p>
+                  {moveDetail && <p className="text-xs">PP: {moveDetail.pp}</p>}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
   };
-
-  let data = fetchPokemonDetails();
   const sound = details.cries.latest;
 
   if (!loaded) {
@@ -266,23 +331,33 @@ const PokemonDetailsPage = () => {
   }
 
   const renderContent = () => {
+    const [loading, setloading] = useState(false);
     switch (selectedSection) {
       case "about":
         const shinySprite = details.sprites.front_shiny
+        let idtxt = details.id.toString();
+        for (let i = idtxt.length; i < 4; i++) {
+          idtxt = "0" + idtxt;
+        }
         return (
-          <div className="flex flex-col items-center justify-center space-y-2">
-            <p
-            className="translate-x-1/4"
-            >Height: {details.height / 10} m</p>
-            <p>Weight: {details.weight / 10} kg</p>
-            <p>ID: {details.id}</p>
-            <p>Base Experience: {details.base_experience}</p>
-            <img
-              className={"transition-opacity duration-1000 ease-in-out" + (loaded ? "opacity-100" : "opacity-0")
-              }
-              src={shinySprite}
-              alt={pokemon.name}
-            />
+          <div className="flex space-x-20 font-bold">
+            <div className="flex flex-col items-left space-y-3">
+              <p className="flex-1">Height: {details.height / 10} M</p>
+              <p className="flex-1">Weight: {details.weight / 10} kg</p>
+              <p className="flex-1">ID: {"#"+idtxt}</p>
+              <p className="flex-1">Base Experience: {details.base_experience}XP</p>
+            </div>
+            <div className=" items-right space-x-10">
+                <h2 className="font-bold text-lg -translate-x-2/7">
+                  Shiny Version:
+                </h2>
+              <img
+                className={`-translate-x-1/4  w-full max-w-[100px] transition-opacity duration-1000 ${loading ? "opacity-100" : "opacity-0"}`}
+                onLoad={() => setloading(true)}
+                src={shinySprite}
+                alt={pokemon.name}
+              />
+            </div>
           </div>
         );
       case "baseStats":
@@ -292,33 +367,28 @@ const PokemonDetailsPage = () => {
           </div>
         );
       case "moves":
-        return (
-          <div className="flex flex-col items-center justify-center space-y-2">
-            <h2 className="font-bold text-lg">Moves:</h2>
-            <ul className="flex flex-wrap justify-center">
-              {details.stats.map((move, index) => (
-                <li
-                  key={index}
-                  className="m-1 bg-blue-200 p-2 rounded hover:bg-blue-400 cursor-pointer"
-                >
-                  {move.stat.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      default:
-        return <div>Select a section</div>;
+        return <MovesDisplay />;
     }
-  };
-
+  };          
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-white to-gray-100">
-      <div className="flex justify-between items-center w-full px-4 py-6 bg-white shadow-lg">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-white to-gray-100 relative">
+      <div className="flex justify-between items-center w-full px-4 py-6 bg-white shadow-lg static">
         <h1 className="text-2xl font-bold">{name}</h1>
         <div
         style={{ display: "flex", gap: "0.5rem" }}
         >
+          <button
+            className="px-2 py-1 bg-black rounded-lg -translate-x-10"
+            onClick={() => window.history.back()}
+          >
+            <p className="text-sm font-bold text-white">Back</p>
+          </button>
+          <button
+            className="px-2 py-1 rounded-lg -translate-x-10"
+            style={{ backgroundColor: colorback }}
+          >
+            <p className="text-sm font-bold text-white">Add to team</p>
+          </button>
           <DisplayPokeball />
           {details.types.map((type) => (
             <div
@@ -334,7 +404,7 @@ const PokemonDetailsPage = () => {
         </div>
       </div>
       <div
-        className="w-full h-72 flex justify-center items-center relative"
+        className="w-full h-auto flex justify-center items-center relative"
         style={{
           background: `radial-gradient(circle, ${darkenColor(
             colorback
