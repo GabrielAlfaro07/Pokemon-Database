@@ -8,12 +8,6 @@ interface GenerationViewProps {
   goBack: () => void;
 }
 
-const API_URLS: { [key: string]: string } = {
-  Kanto: "https://pokeapi.co/api/v2/region/1/",
-  Johto: "https://pokeapi.co/api/v2/region/2/",
-  Hoenn: "https://pokeapi.co/api/v2/region/3/",
-};
-
 const GenerationView: React.FC<GenerationViewProps> = ({
   generation,
   goBack,
@@ -24,7 +18,8 @@ const GenerationView: React.FC<GenerationViewProps> = ({
 
   useEffect(() => {
     if (generation) {
-      fetch(API_URLS[generation])
+      // Obtener el ID de la región basada en el nombre (en este caso, el nombre es el "slug")
+      fetch(`https://pokeapi.co/api/v2/region/${generation}`)
         .then((response) => response.json())
         .then((data) => {
           setData(data);
@@ -42,21 +37,21 @@ const GenerationView: React.FC<GenerationViewProps> = ({
 
   // Lógica para mostrar la imagen correspondiente
   const renderMapImage = () => {
-    switch (generation) {
-      case "Kanto":
+    switch (generation.toLowerCase()) {
+      case "kanto":
         return (
           <img src={Kanto_Map} alt="Mapa de Kanto" className="w-full h-auto" />
         );
-      case "Johto":
+      case "johto":
         return (
           <img src={Johto_Map} alt="Mapa de Johto" className="w-full h-auto" />
         );
-      case "Hoenn":
+      case "hoenn":
         return (
           <img src={Hoenn_Map} alt="Mapa de Hoenn" className="w-full h-auto" />
         );
       default:
-        return null;
+        return null; // Si no es Kanto, Johto o Hoenn, no hay mapa predefinido
     }
   };
 
