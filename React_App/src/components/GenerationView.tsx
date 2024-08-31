@@ -44,6 +44,7 @@ const GenerationView: React.FC<GenerationViewProps> = ({
   const renderMapImage = () => {
     switch (generation) {
       case "Kanto":
+
         return <img src={Kanto_Map} alt="Mapa de Kanto" className="w-full h-auto" />;
       case "Johto":
         return <img src={Johto_Map} alt="Mapa de Johto" className="w-full h-auto" />;
