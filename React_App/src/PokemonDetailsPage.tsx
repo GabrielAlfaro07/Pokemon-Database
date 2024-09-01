@@ -5,6 +5,7 @@ import { changeInitialToMayus } from "./components/ChangeInitialToMayus";
 import { getTypeColor, darkenColor } from "./components/TypeColor";
 import { soundEffect } from "./components/Sound";
 import AddToTeamButton from "./components/AddToTeamButton"; // Import the new component
+import DeletePokemonFromTeamButton from "./components/DeletePokemonFromTeamButton"; // Import the new component
 import { useAuth0 } from "@auth0/auth0-react";
 
 interface Move {
@@ -62,8 +63,8 @@ const PokemonDetailsPage = () => {
   const { user } = useAuth0(); // Add this line to access Auth0 user data
   const userId = user?.sub; // Get the user ID (sub)
   const [loaded, setLoaded] = useState(false);
-  const location = useLocation();  // Inicializa el hook useLocation
-  const { pokemon } = location.state as { pokemon: Pokemon };  // Obtiene el objeto pokemon del estado de la ubicación
+  const location = useLocation(); // Inicializa el hook useLocation
+  const { pokemon } = location.state as { pokemon: Pokemon }; // Obtiene el objeto pokemon del estado de la ubicación
   const { details } = location.state as { details: PokemonDetails };
   const colorback = getTypeColor(details.types[0].type.name);
   const name = changeInitialToMayus(pokemon.name);

@@ -1,6 +1,7 @@
 // components/TeamCard.tsx
 import React from "react";
 import PokemonCard from "./PokemonCard";
+import DeleteTeamButton from "./DeleteTeamButton";
 
 interface PokemonDetails {
   id: number;
@@ -23,16 +24,21 @@ interface TeamCardProps {
     pokemonId: string;
   }[];
   pokemonDetails: { [pokemonId: string]: PokemonDetails };
+  onTeamDeleted: () => void; // Callback function to refresh the team list after deletion
 }
 
 const TeamCard: React.FC<TeamCardProps> = ({
   teamId,
   pokemonList,
   pokemonDetails,
+  onTeamDeleted,
 }) => {
   return (
     <div className="team-container bg-gray-300 p-4 mb-4 rounded-2xl">
-      <h2 className="team-id text-white text-2xl font-bold mb-4">{teamId}</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="team-id text-white text-2xl font-bold">{teamId}</h2>
+        <DeleteTeamButton teamId={teamId} onDelete={onTeamDeleted} />
+      </div>
       <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
         {pokemonList.map(({ pokemonId }) => {
           const pokemon = pokemonDetails[pokemonId];

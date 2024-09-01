@@ -155,6 +155,7 @@ const TeamsDex = () => {
                 teamId={teamId}
                 pokemonList={pokemonList}
                 pokemonDetails={pokemonDetails}
+                onTeamDeleted={fetchTeamsWithPokemon} // Refresh the list after deletion
               />
             ))}
           </div>

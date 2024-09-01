@@ -5,6 +5,8 @@ import {
   getDocs,
   setDoc,
   deleteDoc,
+  query,
+  where,
 } from "firebase/firestore";
 
 const USERS_COLLECTION = "users";
@@ -169,5 +171,53 @@ export const getTeamsPokemon = async (userId: string) => {
   } catch (error) {
     console.error("Error fetching teams with Pokémon: ", error);
     throw new Error("Failed to fetch teams with Pokémon.");
+  }
+};
+
+export const getTeamsWithPokemon = async (
+  userId: string,
+  pokemonId: string
+) => {
+  try {
+    const teamsCollectionRef = collection(
+      db,
+      USERS_COLLECTION,
+      userId,
+      TEAMS_SUBCOLLECTION
+    );
+    const teamsSnapshot = await getDocs(teamsCollectionRef);
+
+    const teamsWithPokemon = await Promise.all(
+      teamsSnapshot.docs.map(async (teamDoc) => {
+        const teamId = teamDoc.id;
+        const pokemonCollectionRef = collection(
+          db,
+          USERS_COLLECTION,
+          userId,
+          TEAMS_SUBCOLLECTION,
+          teamId,
+          POKEMON_SUBCOLLECTION
+        );
+
+        const pokemonQuery = query(
+          pokemonCollectionRef,
+          where("pokemonId", "==", pokemonId)
+        );
+        const pokemonSnapshot = await getDocs(pokemonQuery);
+
+        if (!pokemonSnapshot.empty) {
+          return {
+            teamId,
+          };
+        }
+
+        return null;
+      })
+    );
+
+    return teamsWithPokemon.filter((team) => team !== null);
+  } catch (error) {
+    console.error("Error fetching teams with specific Pokémon: ", error);
+    throw new Error("Failed to fetch teams with specific Pokémon.");
   }
 };

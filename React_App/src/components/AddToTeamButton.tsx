@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { getTeams, addPokemonToTeam } from "../services/TeamsService"; // Ensure this path matches your project structure
-import { useAuth0 } from "@auth0/auth0-react"; // Assuming you're using Auth0 for authentication
-import TeamDropdown from "./TeamDropdown"; // Import the new TeamDropdown component
+import { getTeams, addPokemonToTeam } from "../services/TeamsService";
+import { useAuth0 } from "@auth0/auth0-react";
+import TeamDropdown from "./TeamDropdown";
+import DeletePokemonFromTeamButton from "./DeletePokemonFromTeamButton";
 
 interface AddToTeamButtonProps {
-  pokemonId: string; // Pass the ID of the Pokémon to be added to a team
-  color: string; // Pass the color for the button styling
+  pokemonId: string;
+  color: string;
 }
 
 const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
@@ -14,7 +15,7 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
 }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [teams, setTeams] = useState<any[]>([]);
-  const { user } = useAuth0(); // Assuming you're using Auth0 for authentication
+  const { user } = useAuth0();
 
   useEffect(() => {
     if (user) {
@@ -25,7 +26,7 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
   const fetchTeams = async () => {
     if (user && user.sub) {
       try {
-        const userId = user.sub; // Auth0 user ID
+        const userId = user.sub;
         const teamsData = await getTeams(userId);
         setTeams(teamsData);
       } catch (error) {
@@ -34,13 +35,18 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
     }
   };
 
-  const handleAddToTeam = async (teamId: string) => {
+  const handleAddToTeam = async (
+    teamId: string,
+    refreshTeamsWithPokemon: () => void
+  ) => {
     if (user && user.sub) {
       try {
         const userId = user.sub;
         await addPokemonToTeam(userId, teamId, pokemonId);
         alert(`Added Pokémon to team ${teamId}`);
+        fetchTeams(); // Refresh teams list after adding Pokémon
         setDropdownOpen(false); // Close dropdown after adding
+        refreshTeamsWithPokemon(); // Refresh the list of teams with the Pokémon
       } catch (error) {
         console.error("Failed to add Pokémon to team:", error);
       }
@@ -54,7 +60,7 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
   return (
     <div className="relative inline-block">
       <button
-        className="px-2 py-1 rounded-lg"
+        className="mx-2 px-2 py-1 rounded-lg"
         style={{ backgroundColor: color }}
         onClick={() => setDropdownOpen(!isDropdownOpen)}
       >
@@ -64,10 +70,17 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
       <TeamDropdown
         isOpen={isDropdownOpen}
         teams={teams}
-        onAddToTeam={handleAddToTeam}
+        onAddToTeam={(teamId) => handleAddToTeam(teamId, fetchTeams)} // Pass fetchTeams to handleAddToTeam
         onClose={() => setDropdownOpen(false)}
-        buttonColor={color} // Pass color to TeamDropdown
+        buttonColor={color}
         onTeamCreated={handleTeamCreated}
+      />
+
+      {/* Integrate the DeletePokemonFromTeamButton and pass fetchTeams */}
+      <DeletePokemonFromTeamButton
+        pokemonId={pokemonId}
+        color={color}
+        onPokemonRemoved={fetchTeams} // Pass the fetchTeams function to refresh the list
       />
     </div>
   );
