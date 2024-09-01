@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import PokeDex from "./Pokedex.tsx";
 import ItemDex from "./ItemDex.tsx";
+import ItemDetailsPage from "./ItemDetailsPage.tsx";
 import FavoritesDex from "./FavoritesDex.tsx";
 import PokemonDetailsPage from "./PokemonDetailsPage";
 import Sidebar from "./components/Sidebar";
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/pokedex" element={<PokeDex />} />
           <Route path="/pokemon/:name" element={<PokemonDetailsPage />} />
           <Route path="/itemdex" element={<ItemDex />} />
+          <Route path="/item/:name" element={<ItemDetailsPage />} /> 
           <Route path="/favorites" element={<FavoritesDex />} />
           <Route path="/teams" element={<TeamsDex />} />
         </Routes>

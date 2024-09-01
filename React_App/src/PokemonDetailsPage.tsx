@@ -62,8 +62,8 @@ const PokemonDetailsPage = () => {
   const { user } = useAuth0(); // Add this line to access Auth0 user data
   const userId = user?.sub; // Get the user ID (sub)
   const [loaded, setLoaded] = useState(false);
-  const location = useLocation();
-  const { pokemon } = location.state as { pokemon: Pokemon };
+  const location = useLocation();  // Inicializa el hook useLocation
+  const { pokemon } = location.state as { pokemon: Pokemon };  // Obtiene el objeto pokemon del estado de la ubicación
   const { details } = location.state as { details: PokemonDetails };
   const colorback = getTypeColor(details.types[0].type.name);
   const name = changeInitialToMayus(pokemon.name);

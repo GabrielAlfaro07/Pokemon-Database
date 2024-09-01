@@ -71,23 +71,23 @@ const GenerationView: React.FC<GenerationViewProps> = ({
       <div>
         <h3 className="mt-4 font-semibold">Locations in {generation}:</h3>
         <ul className="list-disc list-inside">
-          {data.locations.map((location: any, index: number) => (
+          {data?.locations?.map((location: any, index: number) => (
             <li key={index}>{location.name}</li>
-          ))}
+          )) || <li>No locations found</li>}
         </ul>
       </div>
 
       <div className="mt-4">
         <h3 className="font-semibold">Main Generation:</h3>
-        <p>{data.main_generation.name}</p>
+        <p>{data?.main_generation?.name || "No main generation information"}</p>
       </div>
 
       <div className="mt-4">
         <h3 className="font-semibold">Pokedexes:</h3>
         <ul className="list-disc list-inside">
-          {data.pokedexes.map((pokedex: any, index: number) => (
+          {data?.pokedexes?.map((pokedex: any, index: number) => (
             <li key={index}>{pokedex.name}</li>
-          ))}
+          )) || <li>No pokedexes found</li>}
         </ul>
       </div>
     </div>

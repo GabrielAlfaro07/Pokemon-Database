@@ -4,7 +4,7 @@ import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
 import CategoryDropdown from "./components/CategoryDropdown";
 import AccountButton from "./components/AccountButton";
-
+import { useNavigate } from "react-router-dom";
 interface Item {
   name: string;
   url: string;
@@ -28,6 +28,11 @@ interface ItemDetails {
 const PAGE_SIZE = 100;
 
 const ItemDex = () => {
+  const navigate = useNavigate(); // Inicializa el hook useNavigate
+  // Función para manejar el clic en un ítem
+  const handleItemClick = (item: Item, details: ItemDetails) => {
+    navigate("/itemdetails", { state: { item, details } });
+  };
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [displayedItems, setDisplayedItems] = useState<Item[]>([]);
   const [itemDetails, setItemDetails] = useState<{
@@ -179,7 +184,10 @@ const ItemDex = () => {
             {displayedItems.map((item, index) => {
               const details = itemDetails[item.name];
               return (
-                <div key={index} className="item-item flex justify-center">
+                <div 
+                key={index} 
+                className="item-item flex justify-center" 
+                >
                   {details && details.id !== -1 ? (
                     <ItemCard item={item} details={details} />
                   ) : (
