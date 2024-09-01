@@ -44,7 +44,7 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
         <h2 className="text-lg text-black font-bold mb-4">Name Your Team</h2>
         <input
           type="text"
-          className="w-full p-2 border border-gray-300 rounded-full mb-4"
+          className="w-full p-2 border text-black border-gray-300 rounded-full mb-4"
           placeholder="Enter team name"
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}

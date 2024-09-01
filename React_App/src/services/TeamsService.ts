@@ -2,7 +2,6 @@ import { db } from "../../firebaseConfig";
 import {
   collection,
   doc,
-  getDoc,
   getDocs,
   setDoc,
   deleteDoc,
@@ -10,6 +9,7 @@ import {
 
 const USERS_COLLECTION = "users";
 const TEAMS_SUBCOLLECTION = "teams";
+const POKEMON_SUBCOLLECTION = "pokemon";
 
 // Fetch all teams for a user
 export const getTeams = async (userId: string) => {
@@ -111,5 +111,46 @@ export const removePokemonFromTeam = async (
   } catch (error) {
     console.error("Error removing Pokémon from team: ", error);
     throw new Error("Failed to remove Pokémon from team.");
+  }
+};
+
+// Fetch all teams for a user along with their Pokémon
+export const getTeamsPokemon = async (userId: string) => {
+  try {
+    const teamsCollectionRef = collection(
+      db,
+      USERS_COLLECTION,
+      userId,
+      TEAMS_SUBCOLLECTION
+    );
+    const teamsSnapshot = await getDocs(teamsCollectionRef);
+    const teamsWithPokemon = await Promise.all(
+      teamsSnapshot.docs.map(async (teamDoc) => {
+        const teamId = teamDoc.id;
+        const pokemonCollectionRef = collection(
+          db,
+          USERS_COLLECTION,
+          userId,
+          TEAMS_SUBCOLLECTION,
+          teamId,
+          POKEMON_SUBCOLLECTION
+        );
+        const pokemonSnapshot = await getDocs(pokemonCollectionRef);
+        const pokemonList = pokemonSnapshot.docs.map((pokemonDoc) => ({
+          id: pokemonDoc.id,
+          ...pokemonDoc.data(),
+        }));
+
+        return {
+          teamId,
+          pokemonList,
+        };
+      })
+    );
+
+    return teamsWithPokemon.filter((team) => team.teamId !== "init"); // Filter out the "init" team
+  } catch (error) {
+    console.error("Error fetching teams with Pokémon: ", error);
+    throw new Error("Failed to fetch teams with Pokémon.");
   }
 };

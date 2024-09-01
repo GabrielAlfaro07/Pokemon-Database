@@ -1,50 +1,96 @@
 import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getTeams } from "./services/TeamsService";
+import { getTeamsPokemon } from "./services/TeamsService";
 import TeamCard from "./components/TeamCard";
 import AccountButton from "./components/AccountButton";
 import { useUserData } from "./hooks/UseUserData";
 import CreateTeamButton from "./components/CreateTeamButton";
+import PokemonCard from "./components/PokemonCard";
 
-interface Team {
-  id: string;
-  pokemon: { id: string; pokemonId: string }[];
+interface PokemonType {
+  type: {
+    name: string;
+    url: string;
+  };
+}
+
+interface PokemonDetails {
+  id: number;
+  name: string;
+  sprites: {
+    front_default: string;
+  };
+  types: PokemonType[];
+}
+
+interface TeamWithPokemon {
+  teamId: string;
+  pokemonList: {
+    id: string;
+    pokemonId: string;
+  }[];
 }
 
 const TeamsDex = () => {
   const { user, isAuthenticated } = useAuth0();
   const isUserDataInitialized = useUserData();
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<TeamWithPokemon[]>([]);
+  const [pokemonDetails, setPokemonDetails] = useState<{
+    [pokemonId: string]: PokemonDetails;
+  }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated && user && isUserDataInitialized) {
-      fetchTeams();
+      fetchTeamsWithPokemon();
     }
   }, [isAuthenticated, user, isUserDataInitialized]);
 
-  const fetchTeams = async () => {
+  const fetchTeamsWithPokemon = async () => {
     setLoading(true);
     try {
-      const userTeams = await getTeams(user!.sub); // Fetch the user's teams
+      const teamsWithPokemon = await getTeamsPokemon(user!.sub);
 
-      // Filter out the "init" document
-      const validTeams = userTeams.filter((team) => team.id !== "init");
-
-      if (!validTeams || validTeams.length === 0) {
+      if (!teamsWithPokemon || teamsWithPokemon.length === 0) {
         setError("No teams found.");
         setTeams([]);
       } else {
-        setTeams(validTeams);
+        setTeams(teamsWithPokemon);
+        fetchPokemonDetails(teamsWithPokemon);
       }
     } catch (error) {
-      console.error("Error in fetchTeams:", error);
-      setError("Failed to fetch teams.");
+      console.error("Error in fetchTeamsWithPokemon:", error);
+      setError("Failed to fetch teams with Pokémon.");
       setTeams([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchPokemonDetails = async (teams: TeamWithPokemon[]) => {
+    const pokemonDetailsMap: { [pokemonId: string]: PokemonDetails } = {};
+
+    for (const team of teams) {
+      for (const pokemon of team.pokemonList) {
+        const pokemonId = pokemon.pokemonId;
+        if (!pokemonDetailsMap[pokemonId]) {
+          try {
+            const response = await fetch(
+              `https://pokeapi.co/api/v2/pokemon/${pokemonId}`
+            );
+            if (!response.ok)
+              throw new Error(`Failed to fetch details for ${pokemonId}`);
+            const data: PokemonDetails = await response.json();
+            pokemonDetailsMap[pokemonId] = data;
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      }
+    }
+
+    setPokemonDetails(pokemonDetailsMap);
   };
 
   if (!isAuthenticated) {
@@ -93,8 +139,39 @@ const TeamsDex = () => {
           </div>
         ) : (
           <div className="team-grid grid grid-cols-1 gap-5">
-            {teams.map((team) => (
-              <TeamCard key={team.id} team={team} />
+            {teams.map(({ teamId, pokemonList }) => (
+              <div
+                key={teamId}
+                className="team-container bg-gray-300 p-4 mb-4 rounded-2xl"
+              >
+                <h2 className="team-id text-white text-2xl font-bold mb-4">
+                  {teamId}
+                </h2>
+                <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+                  {pokemonList.map(({ pokemonId }) => {
+                    const pokemon = pokemonDetails[pokemonId];
+                    return pokemon ? (
+                      <div className="pokemon-item flex justify-center">
+                        <PokemonCard
+                          key={pokemonId}
+                          pokemon={{
+                            name: pokemon.name,
+                            url: `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
+                          }}
+                          details={pokemon}
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        key={pokemonId}
+                        className="pokemon-card bg-gray-200 p-4 rounded-lg"
+                      >
+                        <p>Loading Pokémon details...</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             ))}
           </div>
         )}
