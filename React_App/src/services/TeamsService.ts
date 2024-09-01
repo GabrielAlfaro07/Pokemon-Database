@@ -11,7 +11,7 @@ const USERS_COLLECTION = "users";
 const TEAMS_SUBCOLLECTION = "teams";
 const POKEMON_SUBCOLLECTION = "pokemon";
 
-// Fetch all teams for a user
+// Fetch all teams for a user along with their Pokémon count
 export const getTeams = async (userId: string) => {
   try {
     const teamsCollectionRef = collection(
@@ -21,13 +21,30 @@ export const getTeams = async (userId: string) => {
       TEAMS_SUBCOLLECTION
     );
     const teamsSnapshot = await getDocs(teamsCollectionRef);
-    const teams = teamsSnapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-      .filter((team) => team.id !== "init"); // Filter out the "init" team
-    return teams;
+
+    const teamsWithPokemonCount = await Promise.all(
+      teamsSnapshot.docs.map(async (teamDoc) => {
+        const teamId = teamDoc.id;
+        if (teamId === "init") return null; // Skip "init" team
+
+        const pokemonCollectionRef = collection(
+          db,
+          USERS_COLLECTION,
+          userId,
+          TEAMS_SUBCOLLECTION,
+          teamId,
+          POKEMON_SUBCOLLECTION
+        );
+        const pokemonSnapshot = await getDocs(pokemonCollectionRef);
+
+        return {
+          id: teamId,
+          pokemonCount: pokemonSnapshot.size, // Count of Pokémon in the team
+        };
+      })
+    );
+
+    return teamsWithPokemonCount.filter((team) => team !== null); // Filter out null entries
   } catch (error) {
     console.error("Error fetching teams: ", error);
     throw new Error("Failed to fetch teams.");

@@ -3,7 +3,7 @@ import CreateTeamButton from "./CreateTeamButton"; // Adjust the import path acc
 
 interface TeamDropdownProps {
   isOpen: boolean;
-  teams: any[];
+  teams: { id: string; pokemonCount: number }[];
   onAddToTeam: (teamId: string) => void;
   onClose: () => void;
   buttonColor: string; // Add buttonColor prop
@@ -25,13 +25,20 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({
           {teams.map((team) => (
             <button
               key={team.id}
-              className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+              className={`block w-full px-4 py-2 text-left ${
+                team.pokemonCount >= 6
+                  ? "text-gray-500 cursor-not-allowed"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
               onClick={() => {
-                onAddToTeam(team.id);
-                onClose();
+                if (team.pokemonCount < 6) {
+                  onAddToTeam(team.id);
+                  onClose();
+                }
               }}
+              disabled={team.pokemonCount >= 6} // Disable button if 6 Pokémon already
             >
-              {team.id}
+              {team.id} {team.pokemonCount >= 6 ? "(Full)" : ""}
             </button>
           ))}
           <div className="mt-2 flex justify-center">
