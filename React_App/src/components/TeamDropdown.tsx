@@ -7,6 +7,7 @@ interface TeamDropdownProps {
   onAddToTeam: (teamId: string) => void;
   onClose: () => void;
   buttonColor: string; // Add buttonColor prop
+  onTeamCreated: () => void; // Add this prop
 }
 
 const TeamDropdown: React.FC<TeamDropdownProps> = ({
@@ -15,6 +16,7 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({
   onAddToTeam,
   onClose,
   buttonColor, // Destructure buttonColor
+  onTeamCreated, // Destructure this prop
 }) => {
   if (!isOpen) return null;
 
@@ -42,14 +44,22 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({
             </button>
           ))}
           <div className="mt-2 flex justify-center">
-            <CreateTeamButton color={buttonColor} /> {/* Pass color prop */}
+            <CreateTeamButton
+              color={buttonColor}
+              onTeamCreated={onTeamCreated}
+            />{" "}
+            {/* Pass color prop */}
           </div>
         </>
       ) : (
         <>
           <p className="px-4 py-2 text-gray-500">No teams available</p>
           <div className="mt-2 flex justify-center">
-            <CreateTeamButton color={buttonColor} /> {/* Pass color prop */}
+            <CreateTeamButton
+              color={buttonColor}
+              onTeamCreated={onTeamCreated}
+            />{" "}
+            {/* Pass color prop */}
           </div>
         </>
       )}

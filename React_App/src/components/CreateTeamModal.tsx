@@ -5,13 +5,15 @@ import { useAuth0 } from "@auth0/auth0-react"; // Assuming Auth0 for authenticat
 interface CreateTeamModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onTeamCreated: () => void; // New prop to refresh teams
   color?: string; // Optional color prop
 }
 
 const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
   isOpen,
   onClose,
-  color = "bg-yelow-400", // Default color if not provided
+  onTeamCreated, // Destructure the new prop
+  color = "bg-yellow-400", // Default color if not provided
 }) => {
   const [teamName, setTeamName] = useState("");
   const { user } = useAuth0(); // Assuming Auth0 provides user info
@@ -24,6 +26,7 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
     try {
       await createTeam(user.sub, teamName); // Using user.sub as the user ID
       alert("Team created successfully!");
+      onTeamCreated(); // Call the callback to refresh teams
       onClose();
     } catch (error) {
       console.error("Error creating team:", error);

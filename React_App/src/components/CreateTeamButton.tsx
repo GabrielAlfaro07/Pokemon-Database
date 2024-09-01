@@ -3,10 +3,12 @@ import CreateTeamModal from "./CreateTeamModal"; // Adjust the import path accor
 
 interface CreateTeamButtonProps {
   color?: string; // Optional color prop
+  onTeamCreated: () => void; // Add this prop
 }
 
 const CreateTeamButton: React.FC<CreateTeamButtonProps> = ({
   color = "bg-yellow-400", // Default to Tailwind CSS class
+  onTeamCreated, // Destructure this prop
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -34,6 +36,7 @@ const CreateTeamButton: React.FC<CreateTeamButtonProps> = ({
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         color={color}
+        onTeamCreated={onTeamCreated}
       />
     </>
   );

@@ -47,6 +47,10 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
     }
   };
 
+  const handleTeamCreated = () => {
+    fetchTeams(); // Refresh the teams list
+  };
+
   return (
     <div className="relative inline-block">
       <button
@@ -63,6 +67,7 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
         onAddToTeam={handleAddToTeam}
         onClose={() => setDropdownOpen(false)}
         buttonColor={color} // Pass color to TeamDropdown
+        onTeamCreated={handleTeamCreated}
       />
     </div>
   );

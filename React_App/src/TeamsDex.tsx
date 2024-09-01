@@ -1,3 +1,4 @@
+// TeamsDex.tsx
 import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getTeamsPokemon } from "./services/TeamsService";
@@ -5,7 +6,6 @@ import TeamCard from "./components/TeamCard";
 import AccountButton from "./components/AccountButton";
 import { useUserData } from "./hooks/UseUserData";
 import CreateTeamButton from "./components/CreateTeamButton";
-import PokemonCard from "./components/PokemonCard";
 
 interface PokemonType {
   type: {
@@ -93,6 +93,10 @@ const TeamsDex = () => {
     setPokemonDetails(pokemonDetailsMap);
   };
 
+  const handleTeamCreated = () => {
+    fetchTeamsWithPokemon(); // Refresh the teams list
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="TeamsDex bg-yellow-400 text-white flex flex-col min-h-screen p-4">
@@ -103,9 +107,12 @@ const TeamsDex = () => {
         <div className="bg-white text-gray-700 p-4 rounded-2xl flex-grow overflow-auto text-center text-lg">
           <div className="p-4 text-black text-center">
             <h2 className="text-4xl font-bold">Equipos</h2>
-            <p className="m-4 text-lg">
+            <p className="mt-4 text-lg">
               Aquí podrás encontrar a todos los Equipos que hayas creado, así
               como los Pokémon que hay en ellos.
+            </p>
+            <p className="mb-4 text-lg">
+              Los equipos tienen un máximo de seis Pokémon.
             </p>
           </div>
           <p>You are not logged into any account.</p>
@@ -124,9 +131,12 @@ const TeamsDex = () => {
       <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
         <div className="p-4 text-black text-center">
           <h2 className="text-4xl font-bold">Equipos</h2>
-          <p className="m-4 text-lg">
+          <p className="mt-4 text-lg">
             Aquí podrás encontrar a todos los Equipos que hayas creado, así como
             los Pokémon que hay en ellos.
+          </p>
+          <p className="mb-4 text-lg">
+            Los equipos tienen un máximo de seis Pokémon.
           </p>
         </div>
         {loading ? (
@@ -140,43 +150,17 @@ const TeamsDex = () => {
         ) : (
           <div className="team-grid grid grid-cols-1 gap-5">
             {teams.map(({ teamId, pokemonList }) => (
-              <div
+              <TeamCard
                 key={teamId}
-                className="team-container bg-gray-300 p-4 mb-4 rounded-2xl"
-              >
-                <h2 className="team-id text-white text-2xl font-bold mb-4">
-                  {teamId}
-                </h2>
-                <div className="pokemon-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
-                  {pokemonList.map(({ pokemonId }) => {
-                    const pokemon = pokemonDetails[pokemonId];
-                    return pokemon ? (
-                      <div className="pokemon-item flex justify-center">
-                        <PokemonCard
-                          key={pokemonId}
-                          pokemon={{
-                            name: pokemon.name,
-                            url: `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
-                          }}
-                          details={pokemon}
-                        />
-                      </div>
-                    ) : (
-                      <div
-                        key={pokemonId}
-                        className="pokemon-card bg-gray-200 p-4 rounded-lg"
-                      >
-                        <p>Loading Pokémon details...</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+                teamId={teamId}
+                pokemonList={pokemonList}
+                pokemonDetails={pokemonDetails}
+              />
             ))}
           </div>
         )}
         <div className="flex justify-center mt-4">
-          <CreateTeamButton />
+          <CreateTeamButton onTeamCreated={handleTeamCreated} />
         </div>
       </div>
     </div>
