@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Kanto_Map from "../assets/kanto-map.png";
 import Johto_Map from "../assets/johto-map.png";
 import Hoenn_Map from "../assets/hoenn-map.png";
+import { useTheme } from "../ThemeContext";
 
 interface GenerationViewProps {
   generation: string;
@@ -12,6 +13,7 @@ const GenerationView: React.FC<GenerationViewProps> = ({
   generation,
   goBack,
 }) => {
+  const { isDarkTheme } = useTheme();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,11 @@ const GenerationView: React.FC<GenerationViewProps> = ({
   };
 
   return (
-    <div className="m-0 p-6 bg-gray-300 rounded-2xl shadow-md">
+    <div
+      className={`m-0 p-6 ${
+        isDarkTheme ? "bg-gray-600 text-white" : "bg-gray-300 text-black"
+      } transition-all duration-300 rounded-2xl shadow-md`}
+    >
       <button
         className="bg-red-500 text-white px-4 py-2 rounded-md mb-5 text-lg hover:bg-gray-500 transition duration-300 focus:outline-none"
         onClick={goBack}

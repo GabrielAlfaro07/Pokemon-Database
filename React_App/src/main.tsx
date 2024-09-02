@@ -12,6 +12,7 @@ import Home from "./Home"; // Uncomment if Home component is available
 import "./index.css";
 import { useUserData } from "./hooks/UseUserData.tsx";
 import TeamsDex from "./TeamsDex.tsx";
+import { ThemeProvider } from "./ThemeContext";
 
 const App = () => {
   useUserData(); // Initialize user data when the app starts
@@ -40,7 +41,7 @@ const App = () => {
           <Route path="/pokedex" element={<PokeDex />} />
           <Route path="/pokemon/:name" element={<PokemonDetailsPage />} />
           <Route path="/itemdex" element={<ItemDex />} />
-          <Route path="/item/:name" element={<ItemDetailsPage />} /> 
+          <Route path="/item/:name" element={<ItemDetailsPage />} />
           <Route path="/favorites" element={<FavoritesDex />} />
           <Route path="/teams" element={<TeamsDex />} />
         </Routes>
@@ -58,9 +59,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         redirect_uri: window.location.origin,
       }}
     >
-      <Router>
-        <App />
-      </Router>
+      <ThemeProvider>
+        <Router>
+          <App />
+        </Router>
+      </ThemeProvider>
     </Auth0Provider>
   </React.StrictMode>
 );

@@ -3,8 +3,10 @@ import AccountButton from "./components/AccountButton";
 import GenerationView from "./components/GenerationView";
 import PokemonCard from "./components/PokemonCard";
 import { changeInitialToMayus } from "./components/ChangeInitialToMayus";
+import { useTheme } from "./ThemeContext";
 
 function Home() {
+  const { isDarkTheme } = useTheme();
   const [selectedGeneration, setSelectedGeneration] = useState<string | null>(
     null
   );
@@ -62,14 +64,20 @@ function Home() {
   return (
     <div className="min-h-screen bg-red-500 font-poppins p-4">
       <header
-        className={`bg-gray-700 text-white text-xl p-4 rounded-full mb-4 flex justify-between items-center`}
+        className={`${
+          isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+        } transition-all duration-300 text-xl p-4 rounded-full mb-4 flex justify-between items-center `}
       >
         <h1 className="text-2xl m-0">PokeWiki</h1>
         <AccountButton />
       </header>
 
       {/* Contenedor con fondo blanco y bordes redondeados */}
-      <div className="bg-white rounded-2xl p-6 text-black">
+      <div
+        className={`${
+          isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+        } rounded-2xl p-6 transition-all duration-300`}
+      >
         {!selectedGeneration ? (
           <div className="text-center">
             <h2 className="text-4xl font-bold">Bienvenido a PokeWiki</h2>
@@ -93,7 +101,11 @@ function Home() {
                   {regions.map((region) => (
                     <button
                       key={region.name}
-                      className="bg-gray-200 text-gray-800 px-5 py-2 rounded-full transition-all duration-300 hover:bg-red-500 hover:text-white"
+                      className={`${
+                        isDarkTheme
+                          ? "bg-gray-600 text-white"
+                          : "bg-gray-200 text-black"
+                      } px-5 py-2 rounded-full transition-all duration-300 hover:bg-red-500 hover:text-white`}
                       onClick={() => handleGenerationClick(region.name)}
                     >
                       {changeInitialToMayus(region.name)}
@@ -103,7 +115,13 @@ function Home() {
               )}
             </div>
 
-            <div className="mt-8 bg-gray-200 p-4 rounded-2xl">
+            <div
+              className={`${
+                isDarkTheme
+                  ? "bg-gray-600 text-white"
+                  : "bg-gray-200 text-black"
+              } mt-8 p-4 rounded-2xl transition-all duration-300`}
+            >
               <h3 className="text-xl font-semibold">¿Sabías Que?</h3>
               <p className="mt-2">
                 ¿Sabías que Arcanine fue originalmente planeado para ser un

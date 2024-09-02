@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { FC } from "react";
 import { IconType } from "react-icons";
+import { useTheme } from "../ThemeContext";
 
 interface SidebarLinkProps {
   to: string;
@@ -15,14 +16,21 @@ const SidebarLink: FC<SidebarLinkProps> = ({
   label,
   isOpen,
 }) => {
+  const { isDarkTheme } = useTheme();
   const location = useLocation();
   const isActive = location.pathname === to;
 
   return (
     <Link
       to={to}
-      className={`flex items-center space-x-4 text-white p-3 rounded-lg transition-all duration-300 
-        ${isActive ? "bg-gray-700" : "hover:bg-gray-600"}`}
+      className={`flex items-center space-x-4 ${
+        isDarkTheme ? "text-white" : "text-black"
+      } transition-all duration-300 p-3 rounded-lg 
+        ${
+          isActive
+            ? "bg-gray-600 text-white"
+            : "hover:bg-gray-500 hover:text-white"
+        }`}
     >
       <Icon size={24} />
       <span
