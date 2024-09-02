@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import missingIMG from "./assets/missingno.png";
+import { useTheme } from "./ThemeContext";
 interface Item {
     name: string;
     url: string;
@@ -153,7 +154,7 @@ function getTypeColor(type: string): string {
     const [details, setDetails] = useState<ItemDetails | undefined>(undefined);
     const [loaded, setLoaded] = useState(false); // Control de carga de imagen
     const [selectedSection, setSelectedSection] = useState("about");
-  
+    const { isDarkTheme } = useTheme();
     useEffect(() => {
       if (location.state) {
         const { item, details } = location.state as { item: Item; details: ItemDetails };
@@ -203,15 +204,17 @@ function getTypeColor(type: string): string {
     };
   
     return (
-      <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-white to-gray-100 relative">
-        <div className="flex justify-between items-center w-full px-4 py-6 bg-white shadow-lg">
+      <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} flex flex-col justify-center items-center min-h-screen`}>
+        <div className={`${
+            isDarkTheme ? "bg-gray-800 text-white" :  "bg-white text-black"
+          } flex justify-between items-center w-full px-4 py-6 shadow-lg`}>
           <h1 className="text-2xl font-bold">{item.name}</h1>
           <div className="flex items-center space-x-4">
             <button
-              className="px-2 py-1 bg-black rounded-lg"
+              className={`${isDarkTheme ? "bg-white text-black" : "bg-gray-800 text-white"} px-2 py-1 rounded-lg text-sm font-bold`}
               onClick={() => window.history.back()}
             >
-              <p className="text-sm font-bold text-white">Back</p>
+              <p className="text-sm font-bold">Back</p>
             </button>
           </div>
         </div>
@@ -230,18 +233,21 @@ function getTypeColor(type: string): string {
             onLoad={() => setLoaded(true)}
           />
         </div>
-        <div className="flex w-full justify-center items-center bg-white p-2 rounded-b-lg shadow-md">
+        <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} flex w-full justify-center items-center p-2 rounded-b-lg shadow-md`}>
           <div className="flex space-x-4">
             <button
               className="px-2 py-1 rounded-lg text-sm font-bold text-white"
               style={{ background: getTypeColor(details.category.name) }}
               onClick={() => setSelectedSection("about")}
             >
-              <p className="text-sm font-bold">About</p>
+              <p className={`${isDarkTheme ? "text-black" : "text-white"} text-sm font-bold`}
+              >
+                About
+              </p>
             </button>
           </div>
         </div>
-        <div className="mt-4 p-6 w-full max-w-lg bg-white text-black p-4 rounded-lg shadow-lg">
+        <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} mt-4 p-6 w-full max-w-lg p-4 rounded-lg shadow-lg overflow-hidden transition-transform transform hover:translate-y-[-5px]`}>
           {renderContent()}
         </div>
       </div>

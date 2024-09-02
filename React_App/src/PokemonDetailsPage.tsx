@@ -7,7 +7,7 @@ import { soundEffect } from "./components/Sound";
 import AddToTeamButton from "./components/AddToTeamButton"; // Import the new component
 import DeletePokemonFromTeamButton from "./components/DeletePokemonFromTeamButton"; // Import the new component
 import { useAuth0 } from "@auth0/auth0-react";
-
+import { useTheme } from "./ThemeContext";
 interface Move {
   move: {
     name: string;
@@ -69,7 +69,7 @@ const PokemonDetailsPage = () => {
   const colorback = getTypeColor(details.types[0].type.name);
   const name = changeInitialToMayus(pokemon.name);
   const [selectedSection, setSelectedSection] = useState("about");
-
+  const { isDarkTheme } = useTheme();
   const maxStatValue = Math.max(...details.stats.map((stat) => stat.base_stat));
 
   const StatBar: React.FC<StatBarProps> = ({ value }) => {
@@ -246,15 +246,15 @@ const PokemonDetailsPage = () => {
     }
   };
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-white to-gray-100 relative">
-      <div className="flex justify-between items-center w-full px-4 py-6 bg-white shadow-lg">
+    <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} flex flex-col justify-center items-center min-h-screen`}>
+      <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} flex justify-between items-center w-full px-4 py-6 shadow-lg`}>
         <h1 className="text-2xl font-bold">{name}</h1>
         <div className="flex items-center space-x-4">
           <button
-            className="px-2 py-1 bg-black rounded-lg"
+            className={`${isDarkTheme ? "bg-white text-black" : "bg-gray-800 text-white"} px-2 py-1 bg-black rounded-lg`}
             onClick={() => window.history.back()}
           >
-            <p className="text-sm font-bold text-white">Back</p>
+            <p className="text-sm font-bold">Back</p>
           </button>
           <AddToTeamButton
             pokemonId={details.id.toString()}
@@ -267,7 +267,7 @@ const PokemonDetailsPage = () => {
               className="px-2 py-1 rounded-lg"
               style={{ backgroundColor: getTypeColor(type.type.name) }}
             >
-              <p className="text-sm font-bold text-white">
+              <p className="text-sm font-bold ">
                 {changeInitialToMayus(type.type.name)}
               </p>
             </div>
@@ -291,16 +291,18 @@ const PokemonDetailsPage = () => {
           onLoad={() => setLoaded(true)}
         />
       </div>
-      <div className="flex w-full justify-center items-center bg-white p-2 rounded-b-lg shadow-md">
+      <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} flex w-full justify-center items-center p-2 rounded-b-lg shadow-md`}>
         {["about", "baseStats", "moves"].map((section) => (
           <button
             key={section}
-            className={`mx-2 py-1 px-3 ${
-              selectedSection === section ? "font-bold text-white" : ""
-            }`}
+            className={`mx-2 py-1 px-3 ${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} rounded-lg`}
             style={{
               backgroundColor:
-                selectedSection === section ? darkenColor(colorback) : "white",
+                selectedSection === section
+                  ? colorback
+                  : isDarkTheme
+                  ? "gray"
+                  : "white",
             }}
             onClick={() => setSelectedSection(section)}
           >
@@ -308,7 +310,7 @@ const PokemonDetailsPage = () => {
           </button>
         ))}
       </div>
-      <div className="mt-4 p-6 w-full max-w-lg bg-white rounded shadow-lg">
+      <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} mt-4 p-6 w-full max-w-lg rounded shadow-lg`}>
         {renderContent()}
       </div>
     </div>
