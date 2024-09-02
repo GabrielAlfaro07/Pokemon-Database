@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   getTeamsWithPokemon,
   removePokemonFromTeam,
@@ -28,8 +28,7 @@ const DeletePokemonFromTeamButton: React.FC<
   const fetchTeamsWithPokemon = async () => {
     if (user && user.sub) {
       try {
-        const userId = user.sub;
-        const teamsData = await getTeamsWithPokemon(userId, pokemonId);
+        const teamsData = await getTeamsWithPokemon(user.sub, pokemonId);
         setTeams(teamsData);
       } catch (error) {
         console.error("Failed to fetch teams with Pokémon:", error);
@@ -40,8 +39,7 @@ const DeletePokemonFromTeamButton: React.FC<
   const handleRemoveFromTeam = async (teamId: string) => {
     if (user && user.sub) {
       try {
-        const userId = user.sub;
-        await removePokemonFromTeam(userId, teamId, pokemonId);
+        await removePokemonFromTeam(user.sub, teamId, pokemonId);
         alert(`Removed Pokémon from team ${teamId}`);
         fetchTeamsWithPokemon(); // Refresh the list of teams
         setDropdownOpen(false); // Close dropdown after removal

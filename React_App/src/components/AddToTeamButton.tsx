@@ -26,8 +26,7 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
   const fetchTeams = async () => {
     if (user && user.sub) {
       try {
-        const userId = user.sub;
-        const teamsData = await getTeams(userId);
+        const teamsData = await getTeams(user.sub);
         setTeams(teamsData);
       } catch (error) {
         console.error("Failed to fetch teams:", error);
@@ -41,8 +40,7 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
   ) => {
     if (user && user.sub) {
       try {
-        const userId = user.sub;
-        await addPokemonToTeam(userId, teamId, pokemonId);
+        await addPokemonToTeam(user.sub, teamId, pokemonId);
         alert(`Added Pokémon to team ${teamId}`);
         fetchTeams(); // Refresh teams list after adding Pokémon
         setDropdownOpen(false); // Close dropdown after adding
@@ -70,17 +68,16 @@ const AddToTeamButton: React.FC<AddToTeamButtonProps> = ({
       <TeamDropdown
         isOpen={isDropdownOpen}
         teams={teams}
-        onAddToTeam={(teamId) => handleAddToTeam(teamId, fetchTeams)} // Pass fetchTeams to handleAddToTeam
+        onAddToTeam={(teamId) => handleAddToTeam(teamId, fetchTeams)}
         onClose={() => setDropdownOpen(false)}
         buttonColor={color}
         onTeamCreated={handleTeamCreated}
       />
 
-      {/* Integrate the DeletePokemonFromTeamButton and pass fetchTeams */}
       <DeletePokemonFromTeamButton
         pokemonId={pokemonId}
         color={color}
-        onPokemonRemoved={fetchTeams} // Pass the fetchTeams function to refresh the list
+        onPokemonRemoved={fetchTeams} // Refresh the teams list on removal
       />
     </div>
   );
