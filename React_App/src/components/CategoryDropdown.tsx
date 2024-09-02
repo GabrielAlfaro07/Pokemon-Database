@@ -61,7 +61,7 @@ const CategoryDropdown = ({
 }: CategoryDropdownProps) => {
   return (
     <select
-      className="bg-white text-gray-800 text-base rounded-full px-3 py-2"
+      className="bg-white text-gray-800 text-base rounded-full px-3 py-2 shadow-lg"
       value={selectedCategory || ""}
       onChange={(e) => onChange(e.target.value || null)}
     >

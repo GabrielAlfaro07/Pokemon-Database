@@ -2,29 +2,26 @@ import React, { useEffect, useState } from "react";
 import Kanto_Map from "../assets/kanto-map.png";
 import Johto_Map from "../assets/johto-map.png";
 import Hoenn_Map from "../assets/hoenn-map.png";
+import { useTheme } from "../ThemeContext";
 
 interface GenerationViewProps {
   generation: string;
   goBack: () => void;
 }
 
-const API_URLS: { [key: string]: string } = {
-  Kanto: "https://pokeapi.co/api/v2/region/1/",
-  Johto: "https://pokeapi.co/api/v2/region/2/",
-  Hoenn: "https://pokeapi.co/api/v2/region/3/",
-};
-
 const GenerationView: React.FC<GenerationViewProps> = ({
   generation,
   goBack,
 }) => {
+  const { isDarkTheme } = useTheme();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (generation) {
-      fetch(API_URLS[generation])
+      // Obtener el ID de la región basada en el nombre (en este caso, el nombre es el "slug")
+      fetch(`https://pokeapi.co/api/v2/region/${generation}`)
         .then((response) => response.json())
         .then((data) => {
           setData(data);
@@ -51,12 +48,16 @@ const GenerationView: React.FC<GenerationViewProps> = ({
       case "Hoenn":
         return <img src={Hoenn_Map} alt="Mapa de Hoenn" className="w-full h-auto" />;
       default:
-        return null;
+        return null; // Si no es Kanto, Johto o Hoenn, no hay mapa predefinido
     }
   };
 
   return (
-    <div className="m-0 p-6 bg-gray-300 rounded-2xl shadow-md">
+    <div
+      className={`m-0 p-6 ${
+        isDarkTheme ? "bg-gray-600 text-white" : "bg-gray-300 text-black"
+      } transition-all duration-300 rounded-2xl shadow-md`}
+    >
       <button
         className="bg-red-500 text-white px-4 py-2 rounded-md mb-5 text-lg hover:bg-gray-500 transition duration-300 focus:outline-none"
         onClick={goBack}
@@ -73,23 +74,23 @@ const GenerationView: React.FC<GenerationViewProps> = ({
       <div>
         <h3 className="mt-4 font-semibold">Locations in {generation}:</h3>
         <ul className="list-disc list-inside">
-          {data.locations.map((location: any, index: number) => (
+          {data?.locations?.map((location: any, index: number) => (
             <li key={index}>{location.name}</li>
-          ))}
+          )) || <li>No locations found</li>}
         </ul>
       </div>
 
       <div className="mt-4">
         <h3 className="font-semibold">Main Generation:</h3>
-        <p>{data.main_generation.name}</p>
+        <p>{data?.main_generation?.name || "No main generation information"}</p>
       </div>
 
       <div className="mt-4">
         <h3 className="font-semibold">Pokedexes:</h3>
         <ul className="list-disc list-inside">
-          {data.pokedexes.map((pokedex: any, index: number) => (
+          {data?.pokedexes?.map((pokedex: any, index: number) => (
             <li key={index}>{pokedex.name}</li>
-          ))}
+          )) || <li>No pokedexes found</li>}
         </ul>
       </div>
     </div>

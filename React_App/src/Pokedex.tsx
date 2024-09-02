@@ -4,6 +4,7 @@ import SearchBar from "./components/SearchBar";
 import PaginationButtons from "./components/PaginationButtons";
 import TypeDropdown from "./components/TypeDropdown";
 import AccountButton from "./components/AccountButton";
+import { useTheme } from "./ThemeContext";
 
 interface Pokemon {
   name: string;
@@ -41,6 +42,7 @@ const PokeDex = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const { isDarkTheme } = useTheme();
 
   useEffect(() => {
     fetchInitialData();
@@ -146,7 +148,11 @@ const PokeDex = () => {
 
   return (
     <div className="PokeDex bg-red-400 text-white flex flex-col min-h-screen p-4">
-      <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
+      <header
+        className={`${
+          isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+        } transition-all duration-300 text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center`}
+      >
         <h1 className="text-2xl m-0">PokéDex</h1>
         <div className="flex items-center space-x-4">
           <TypeDropdown
@@ -157,7 +163,25 @@ const PokeDex = () => {
           <AccountButton />
         </div>
       </header>
-      <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
+      <div
+        className={`${
+          isDarkTheme ? "bg-gray-800" : "bg-white"
+        } transition-all duration-300 p-4 rounded-2xl flex-grow overflow-auto`}
+      >
+        <div
+          className={`p-4 ${
+            isDarkTheme ? "text-white" : "text-black"
+          } transition-all duration-300 text-center`}
+        >
+          <h2 className="text-4xl font-bold">PokéDex</h2>
+          <p className="mt-4 text-lg">
+            La PokéDex es una enciclopedia virtual de alta tecnología que
+            contiene información sobre todos los Pokémon.
+          </p>
+          <p className="mb-4 text-lg">
+            Aquí puedes buscar información sobre el Pokemón que desees.
+          </p>
+        </div>
         <PaginationButtons
           currentPage={currentPage}
           totalPages={totalPages}

@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import DisplayPokeball from "./components/DisplayPokeball";
-import { chancheInitialToMayus } from "./components/ChangeInitialToMayus";
+import { changeInitialToMayus } from "./components/ChangeInitialToMayus";
 import { getTypeColor, darkenColor } from "./components/TypeColor";
 import { soundEffect } from "./components/Sound";
+import AddToTeamButton from "./components/AddToTeamButton"; // Import the new component
+import DeletePokemonFromTeamButton from "./components/DeletePokemonFromTeamButton"; // Import the new component
+import { useAuth0 } from "@auth0/auth0-react";
+import { useTheme } from "./ThemeContext";
 interface Move {
   move: {
     name: string;
     url: string;
   };
-
 }
 interface MoveDetails {
   pp: number;
@@ -57,19 +60,21 @@ interface StatBarProps {
 }
 
 const PokemonDetailsPage = () => {
+  const { user } = useAuth0(); // Add this line to access Auth0 user data
+  const userId = user?.sub; // Get the user ID (sub)
   const [loaded, setLoaded] = useState(false);
-  const location = useLocation();
-  const { pokemon } = location.state as { pokemon: Pokemon };
+  const location = useLocation(); // Inicializa el hook useLocation
+  const { pokemon } = location.state as { pokemon: Pokemon }; // Obtiene el objeto pokemon del estado de la ubicación
   const { details } = location.state as { details: PokemonDetails };
   const colorback = getTypeColor(details.types[0].type.name);
-  const name = chancheInitialToMayus(pokemon.name);
+  const name = changeInitialToMayus(pokemon.name);
   const [selectedSection, setSelectedSection] = useState("about");
-
+  const { isDarkTheme } = useTheme();
   const maxStatValue = Math.max(...details.stats.map((stat) => stat.base_stat));
 
   const StatBar: React.FC<StatBarProps> = ({ value }) => {
     const [currentValue, setCurrentValue] = useState(0);
-  
+
     useEffect(() => {
       const increment = value / 100;
       const interval = setInterval(() => {
@@ -81,10 +86,10 @@ const PokemonDetailsPage = () => {
           return prev + increment;
         });
       }, 10);
-  
+
       return () => clearInterval(interval);
     }, [value]);
-  
+
     return (
       <div
         className="h-3 w-full rounded"
@@ -95,22 +100,22 @@ const PokemonDetailsPage = () => {
       />
     );
   };
-  
+
   const renderBaseStats = () => {
     return details.stats.map((stat) => (
       <div key={stat.stat.name} className="flex mb-2 space-x-20">
         {/* Primer div: nombre del stat */}
         <div className="w-40">
           <h2 className="text-xs font-bold text-left">
-            {chancheInitialToMayus(stat.stat.name)}
+            {changeInitialToMayus(stat.stat.name)}
           </h2>
         </div>
-  
+
         {/* Segundo div: barra de stat */}
         <div className="w-full">
           <StatBar value={stat.base_stat} />
         </div>
-  
+
         {/* Tercer div: número del stat */}
         <div className="w-1/4 text-right">
           <h2 className="text-gray-700 font-bold">{stat.base_stat}</h2>
@@ -123,10 +128,10 @@ const PokemonDetailsPage = () => {
     const [currentMoves, setCurrentMoves] = useState<Move[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [moveDetails, setMoveDetails] = useState<MoveDetails[]>([]);
-  
+
     useEffect(() => {
       const moves = details.moves; // Obtener todos los movimientos
-  
+
       // Función para obtener detalles de cada movimiento
       const fetchMoveDetails = async () => {
         const detailsPromises = moves.map(async (move) => {
@@ -137,47 +142,54 @@ const PokemonDetailsPage = () => {
             type: data.type.name,
           };
         });
-  
+
         const fetchedDetails = await Promise.all(detailsPromises);
         setMoveDetails(fetchedDetails);
       };
-  
+
       fetchMoveDetails(); // Llamar la función para obtener los detalles
     }, [details.moves]);
-  
+
     useEffect(() => {
       const intervalId = setInterval(() => {
         const nextIndex = (currentIndex + 8) % details.moves.length; // Avanzar de 8 en 8
         setCurrentIndex(nextIndex); // Actualizar el índice
         setCurrentMoves(details.moves.slice(nextIndex, nextIndex + 8)); // Obtener los próximos 8 movimientos
       }, 2000); // Cambiar cada 2 segundos
-  
+
       return () => clearInterval(intervalId); // Limpiar intervalo al desmontar
     }, [currentIndex, details.moves]);
-  
+
     return (
       <div className="flex flex-col items-center justify-center transition-all duration-900 ease-in-out h-full w-full">
         {Array.from({ length: 2 }).map((_, rowIndex) => (
           <div key={rowIndex} className="flex space-x-2 mb-2">
-            {currentMoves.slice(rowIndex * 4, rowIndex * 4 + 4).map((move, index) => {
-              const moveDetail = moveDetails[currentIndex + rowIndex * 4 + index];
-              const colorClass = getTypeColor(moveDetail?.type);
-              return (
-                <div
-                  key={move.move.name}
-                  className={`flex flex-col items-center justify-center p-2 text-white font-bold`}
-                  style={{
-                    backgroundColor: colorClass,
-                    borderRadius: "0.7rem",
-                    width: "120px", // Ajusta el ancho fijo
-                    height: "60px", // Ajusta el alto fijo
-                  }}
-                >
-                  <p className="text-sm text-center">{chancheInitialToMayus(move.move.name)}</p>
-                  {moveDetail && <p className="text-xs">PP: {moveDetail.pp}</p>}
-                </div>
-              );
-            })}
+            {currentMoves
+              .slice(rowIndex * 4, rowIndex * 4 + 4)
+              .map((move, index) => {
+                const moveDetail =
+                  moveDetails[currentIndex + rowIndex * 4 + index];
+                const colorClass = getTypeColor(moveDetail?.type);
+                return (
+                  <div
+                    key={move.move.name}
+                    className={`flex flex-col items-center justify-center p-2 text-white font-bold`}
+                    style={{
+                      backgroundColor: colorClass,
+                      borderRadius: "0.7rem",
+                      width: "120px", // Ajusta el ancho fijo
+                      height: "60px", // Ajusta el alto fijo
+                    }}
+                  >
+                    <p className="text-sm text-center">
+                      {changeInitialToMayus(move.move.name)}
+                    </p>
+                    {moveDetail && (
+                      <p className="text-xs">PP: {moveDetail.pp}</p>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         ))}
       </div>
@@ -193,7 +205,7 @@ const PokemonDetailsPage = () => {
     const [loading, setloading] = useState(false);
     switch (selectedSection) {
       case "about":
-        const shinySprite = details.sprites.front_shiny
+        const shinySprite = details.sprites.front_shiny;
         let idtxt = details.id.toString();
         for (let i = idtxt.length; i < 4; i++) {
           idtxt = "0" + idtxt;
@@ -203,15 +215,19 @@ const PokemonDetailsPage = () => {
             <div className="flex flex-col items-left space-y-3">
               <p className="flex-1">Height: {details.height / 10} M</p>
               <p className="flex-1">Weight: {details.weight / 10} kg</p>
-              <p className="flex-1">ID: {"#"+idtxt}</p>
-              <p className="flex-1">Base Experience: {details.base_experience}XP</p>
+              <p className="flex-1">ID: {"#" + idtxt}</p>
+              <p className="flex-1">
+                Base Experience: {details.base_experience}XP
+              </p>
             </div>
             <div className=" items-right space-x-10">
-                <h2 className="font-bold text-lg -translate-x-2/7">
-                  Shiny Version:
-                </h2>
+              <h2 className="font-bold text-lg -translate-x-2/7">
+                Shiny Version:
+              </h2>
               <img
-                className={`-translate-x-1/4  w-full max-w-[100px] transition-opacity duration-1000 ${loading ? "opacity-100" : "opacity-0"}`}
+                className={`-translate-x-1/4  w-full max-w-[100px] transition-opacity duration-1000 ${
+                  loading ? "opacity-100" : "opacity-0"
+                }`}
                 onLoad={() => setloading(true)}
                 src={shinySprite}
                 alt={pokemon.name}
@@ -228,38 +244,34 @@ const PokemonDetailsPage = () => {
       case "moves":
         return <MovesDisplay />;
     }
-  };          
+  };
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-white to-gray-100 relative">
-      <div className="flex justify-between items-center w-full px-4 py-6 bg-white shadow-lg static">
+    <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} flex flex-col justify-center items-center min-h-screen`}>
+      <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} flex justify-between items-center w-full px-4 py-6 shadow-lg`}>
         <h1 className="text-2xl font-bold">{name}</h1>
-        <div
-        style={{ display: "flex", gap: "0.5rem" }}
-        >
+        <div className="flex items-center space-x-4">
           <button
-            className="px-2 py-1 bg-black rounded-lg -translate-x-10"
+            className={`${isDarkTheme ? "bg-white text-black" : "bg-gray-800 text-white"} px-2 py-1 bg-black rounded-lg`}
             onClick={() => window.history.back()}
           >
-            <p className="text-sm font-bold text-white">Back</p>
+            <p className="text-sm font-bold">Back</p>
           </button>
-          <button
-            className="px-2 py-1 rounded-lg -translate-x-10"
-            style={{ backgroundColor: colorback }}
-          >
-            <p className="text-sm font-bold text-white">Add to team</p>
-          </button>
-          <DisplayPokeball />
+          <AddToTeamButton
+            pokemonId={details.id.toString()}
+            color={colorback}
+          />
+          <DisplayPokeball pokemonId={details.id.toString()} userId={userId} />
           {details.types.map((type) => (
             <div
               key={type.type.name}
-              className="px-2 py-1 bg-gray-200 rounded-lg"
+              className="px-2 py-1 rounded-lg"
               style={{ backgroundColor: getTypeColor(type.type.name) }}
             >
-              <p className="text-sm font-bold text-white">
-                {chancheInitialToMayus(type.type.name)}
+              <p className="text-sm font-bold ">
+                {changeInitialToMayus(type.type.name)}
               </p>
             </div>
-          ))} 
+          ))}
         </div>
       </div>
       <div
@@ -279,16 +291,18 @@ const PokemonDetailsPage = () => {
           onLoad={() => setLoaded(true)}
         />
       </div>
-      <div className="flex w-full justify-center items-center bg-white p-2 rounded-b-lg shadow-md">
+      <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} flex w-full justify-center items-center p-2 rounded-b-lg shadow-md`}>
         {["about", "baseStats", "moves"].map((section) => (
           <button
             key={section}
-            className={`mx-2 py-1 px-3 ${
-              selectedSection === section ? "font-bold text-white" : ""
-            }`}
+            className={`mx-2 py-1 px-3 ${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} rounded-lg`}
             style={{
               backgroundColor:
-                selectedSection === section ? darkenColor(colorback) : "white",
+                selectedSection === section
+                  ? colorback
+                  : isDarkTheme
+                  ? "gray"
+                  : "white",
             }}
             onClick={() => setSelectedSection(section)}
           >
@@ -296,7 +310,7 @@ const PokemonDetailsPage = () => {
           </button>
         ))}
       </div>
-      <div className="mt-4 p-6 w-full max-w-lg bg-white rounded shadow-lg">
+      <div className={`${isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"} mt-4 p-6 w-full max-w-lg rounded shadow-lg`}>
         {renderContent()}
       </div>
     </div>
