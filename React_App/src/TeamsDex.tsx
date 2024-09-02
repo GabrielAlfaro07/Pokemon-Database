@@ -6,6 +6,7 @@ import TeamCard from "./components/TeamCard";
 import AccountButton from "./components/AccountButton";
 import { useUserData } from "./hooks/UseUserData";
 import CreateTeamButton from "./components/CreateTeamButton";
+import { useTheme } from "./ThemeContext";
 
 interface PokemonType {
   type: {
@@ -40,6 +41,7 @@ const TeamsDex = () => {
   }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isDarkTheme } = useTheme();
 
   useEffect(() => {
     if (isAuthenticated && user && isUserDataInitialized) {
@@ -100,12 +102,20 @@ const TeamsDex = () => {
   if (!isAuthenticated) {
     return (
       <div className="TeamsDex bg-yellow-400 text-white flex flex-col min-h-screen p-4">
-        <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
+        <header
+          className={`${
+            isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+          } transition-all duration-300 text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center`}
+        >
           <h1 className="text-2xl m-0">Your Pokémon Teams</h1>
           <AccountButton />
         </header>
-        <div className="bg-white text-gray-700 p-4 rounded-2xl flex-grow overflow-auto text-center text-lg">
-          <div className="p-4 text-black text-center">
+        <div
+          className={`${
+            isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+          } transition-all duration-300 text-center p-4 rounded-2xl flex-grow overflow-auto`}
+        >
+          <div className="p-4 text-center">
             <h2 className="text-4xl font-bold">Equipos</h2>
             <p className="mt-4 text-lg">
               Aquí podrás encontrar a todos los Equipos que hayas creado, así
@@ -124,12 +134,25 @@ const TeamsDex = () => {
 
   return (
     <div className="TeamsDex bg-yellow-400 text-white flex flex-col min-h-screen p-4">
-      <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
+      <header
+        className={`${
+          isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+        } transition-all duration-300 text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center`}
+      >
+        {" "}
         <h1 className="text-2xl m-0">Your Pokémon Teams</h1>
         <AccountButton />
       </header>
-      <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
-        <div className="p-4 text-black text-center">
+      <div
+        className={`${
+          isDarkTheme ? "bg-gray-800" : "bg-white"
+        } transition-all duration-300 text-center p-4 rounded-2xl flex-grow overflow-auto`}
+      >
+        <div
+          className={`p-4 ${
+            isDarkTheme ? "text-white" : "text-black"
+          } transition-all duration-300 text-center`}
+        >
           <h2 className="text-4xl font-bold">Equipos</h2>
           <p className="mt-4 text-lg">
             Aquí podrás encontrar a todos los Equipos que hayas creado, así como

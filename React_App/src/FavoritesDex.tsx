@@ -7,6 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { getFavorites } from "./services/FavoritesService";
 import AccountButton from "./components/AccountButton";
 import { useUserData } from "./hooks/UseUserData"; // Import your hook
+import { useTheme } from "./ThemeContext";
 
 interface PokemonType {
   type: {
@@ -48,6 +49,7 @@ const FavoritesDex = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const { isDarkTheme } = useTheme();
 
   useEffect(() => {
     if (isAuthenticated && user && isUserDataInitialized) {
@@ -173,12 +175,20 @@ const FavoritesDex = () => {
   if (!isAuthenticated) {
     return (
       <div className="FavoritesDex bg-blue-400 text-white flex flex-col min-h-screen p-4">
-        <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
+        <header
+          className={`${
+            isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+          } transition-all duration-300 text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center`}
+        >
           <h1 className="text-2xl m-0">Your Favorite Pokémon</h1>
           <AccountButton />
         </header>
-        <div className="bg-white text-gray-700 p-4 rounded-2xl flex-grow overflow-auto text-center text-lg">
-          <div className="p-4 text-black text-center">
+        <div
+          className={`${
+            isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+          } transition-all duration-300 text-center p-4 rounded-2xl flex-grow overflow-auto`}
+        >
+          <div className="p-4">
             <h2 className="text-4xl font-bold">Favoritos</h2>
             <p className="m-4 text-lg">
               Aquí podrás encontrar a todos los Pokémon que hayas marcado como
@@ -194,7 +204,12 @@ const FavoritesDex = () => {
 
   return (
     <div className="FavoritesDex bg-blue-400 text-white flex flex-col min-h-screen p-4">
-      <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
+      <header
+        className={`${
+          isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+        } transition-all duration-300 text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center`}
+      >
+        {" "}
         <h1 className="text-2xl m-0">Your Favorite Pokémon</h1>
         <div className="flex items-center space-x-4">
           <TypeDropdown
@@ -205,8 +220,16 @@ const FavoritesDex = () => {
           <AccountButton />
         </div>
       </header>
-      <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
-        <div className="p-4 text-black text-center">
+      <div
+        className={`${
+          isDarkTheme ? "bg-gray-800" : "bg-white"
+        } transition-all duration-300 text-center p-4 rounded-2xl flex-grow overflow-auto`}
+      >
+        <div
+          className={`p-4 ${
+            isDarkTheme ? "text-white" : "text-black"
+          } transition-all duration-300 text-center`}
+        >
           <h2 className="text-4xl font-bold">Favoritos</h2>
           <p className="m-4 text-lg">
             Aquí podrás encontrar a todos los Pokémon que hayas marcado como

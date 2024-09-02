@@ -15,7 +15,7 @@ const AccountButton = () => {
   return isAuthenticated ? (
     <div className="relative">
       <button
-        className="text-base bg-gray-500 rounded-full px-4 py-2"
+        className="text-base bg-blue-500 rounded-full px-4 py-2"
         onClick={toggleDropdown}
       >
         Account

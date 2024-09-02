@@ -34,7 +34,7 @@ const TeamCard: React.FC<TeamCardProps> = ({
   onTeamDeleted,
 }) => {
   return (
-    <div className="team-container bg-gray-300 p-4 mb-4 rounded-2xl">
+    <div className="team-container bg-gray-400 p-4 mb-4 rounded-2xl">
       <div className="flex justify-between items-center mb-4">
         <h2 className="team-id text-white text-2xl font-bold">{teamId}</h2>
         <DeleteTeamButton teamId={teamId} onDelete={onTeamDeleted} />

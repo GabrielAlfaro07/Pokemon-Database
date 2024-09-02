@@ -5,6 +5,8 @@ import PaginationButtons from "./components/PaginationButtons";
 import CategoryDropdown from "./components/CategoryDropdown";
 import AccountButton from "./components/AccountButton";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "./ThemeContext";
+
 interface Item {
   name: string;
   url: string;
@@ -46,6 +48,7 @@ const ItemDex = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { isDarkTheme } = useTheme();
 
   useEffect(() => {
     fetchInitialData();
@@ -150,7 +153,12 @@ const ItemDex = () => {
 
   return (
     <div className="ItemDex bg-green-400 text-white flex flex-col min-h-screen p-4">
-      <header className="bg-gray-700 text-white text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center">
+      <header
+        className={`${
+          isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-black"
+        } transition-all duration-300 text-center text-xl p-4 rounded-full mb-4 flex justify-between items-center`}
+      >
+        {" "}
         <h1 className="text-2xl m-0">ItemDex</h1>
         <div className="flex items-center space-x-4">
           <CategoryDropdown
@@ -161,8 +169,16 @@ const ItemDex = () => {
           <AccountButton />
         </div>
       </header>
-      <div className="bg-white p-4 rounded-2xl flex-grow overflow-auto">
-        <div className="p-4 text-black text-center">
+      <div
+        className={`${
+          isDarkTheme ? "bg-gray-800" : "bg-white"
+        } transition-all duration-300 p-4 rounded-2xl flex-grow overflow-auto`}
+      >
+        <div
+          className={`p-4 ${
+            isDarkTheme ? "text-white" : "text-black"
+          } transition-all duration-300 text-center`}
+        >
           <h2 className="text-4xl font-bold">ItemDex</h2>
           <p className="mt-4 text-lg">
             La ItemDex es una enciclopedia virtual que acoge información sobre
@@ -184,10 +200,7 @@ const ItemDex = () => {
             {displayedItems.map((item, index) => {
               const details = itemDetails[item.name];
               return (
-                <div 
-                key={index} 
-                className="item-item flex justify-center" 
-                >
+                <div key={index} className="item-item flex justify-center">
                   {details && details.id !== -1 ? (
                     <ItemCard item={item} details={details} />
                   ) : (
