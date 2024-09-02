@@ -3,10 +3,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Profile from "./Profile";
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
+import { useTheme } from "../ThemeContext";
 
 const AccountButton = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { isAuthenticated } = useAuth0();
+  const { isDarkTheme } = useTheme();
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prevState) => !prevState);
@@ -21,7 +23,11 @@ const AccountButton = () => {
         Account
       </button>
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 p-4 bg-white text-black rounded-2xl shadow-lg z-10">
+        <div
+          className={`absolute right-0 mt-2 p-4 ${
+            isDarkTheme ? "bg-gray-600 text-white" : "bg-gray-300 text-black"
+          } transition-all duration-300 rounded-2xl shadow-lg z-10`}
+        >
           <Profile />
           <LogoutButton />
         </div>
