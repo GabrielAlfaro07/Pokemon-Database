@@ -27,7 +27,7 @@ const types = [
 const TypeDropdown = ({ selectedType, onChange }: TypeDropdownProps) => {
   return (
     <select
-      className="bg-white text-gray-800 text-base rounded-full px-3 py-2"
+      className="bg-white text-gray-800 text-base rounded-full px-3 py-2 shadow-lg"
       value={selectedType || ""}
       onChange={(e) => onChange(e.target.value || null)}
     >

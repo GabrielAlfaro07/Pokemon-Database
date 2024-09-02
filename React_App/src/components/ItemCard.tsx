@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 interface Item {
   name: string;
   url: string;
@@ -90,13 +91,23 @@ function capitalizeWords(name: string): string {
 }
 
 const ItemCard = ({ item, details }: Props) => {
-  // Early return if details are undefined
-  if (!details) return <div>Loading details...</div>;
-
+  const navigate = useNavigate();
+  const handleItemClick = () => {
+    //enviar los props a la ruta /item/:name
+    if (details) {
+      navigate(`/item/${item.name}`, { state: { item, details } });
+    } else {
+      console.error("Details are not available for the selected item.");
+    }
+  };
+  if (!details) {
+    return <div>Loading details...</div>;
+  }
   const categoryColor = getCategoryColor(details.category.name);
 
   return (
     <div
+      onClick={() => handleItemClick()}
       className="relative bg-gray-800 rounded-xl p-4 text-left w-[200px] h-[110px] overflow-hidden transition-transform transform hover:translate-y-[-10px]"
       style={{ backgroundColor: categoryColor }}
     >
